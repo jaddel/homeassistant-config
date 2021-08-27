@@ -1,0 +1,104 @@
+shades_open:
+  alias: Shades Open
+  sequence:
+  - service: cover.open_cover
+    data: {}
+    target:
+      entity_id:
+      - cover.bedroom_shade
+      - cover.living_room_shade_l
+      - cover.living_room_shade_r
+      - cover.office_shade
+  mode: single
+shades_close:
+  alias: Shades Close
+  sequence:
+  - service: cover.close_cover
+    data: {}
+    target:
+      entity_id:
+      - cover.bedroom_shade
+      - cover.living_room_shade_l
+      - cover.living_room_shade_r
+      - cover.office_shade
+  mode: single
+homekit_good_night:
+  alias: HomeKit Good Night
+  sequence:
+  - service: light.turn_off
+    target:
+      entity_id:
+      - light.lg_hall
+      - light.lg_living_room
+      - light.lg_office_all
+      - light.bedroom_bed_freya
+      - light.bedroom_bed_max
+      - light.bedroom_wardrobe
+  mode: single
+home_assistent_restart_appdameon:
+  alias: Home Assistent Restart AppDameon
+  sequence:
+  - service: hassio.addon_restart
+    data:
+      addon: a0d7b954_appdaemon
+  mode: single
+home_assistent_restart_core:
+  alias: Home Assistent Restart Core
+  sequence:
+  - service: homeassistant.restart
+  mode: single
+homekit_good_morning:
+  alias: Homekit Good Morning
+  sequence:
+  - service: cover.set_cover_position
+    target:
+      entity_id:
+      - cover.bedroom_shade
+      - cover.living_room_shade_table
+      - cover.living_room_shade_tv
+      - cover.office_shade
+    data:
+      position: 70
+  mode: single
+office_desk_main_fail_safe:
+  alias: Office Desk Main Fail Safe
+  sequence:
+  - type: turn_on
+    device_id: da1a4bc5c2a0a98537e1815a652ff349
+    entity_id: switch.main_office_desk
+    domain: switch
+  mode: single
+notification_tester:
+  alias: Notification Tester
+  sequence:
+  - service: notify.awsome_people
+    data:
+      message: 'I have us lieb. :) '
+  - service: notify.mobile_app_whiterabbit
+    data:
+      message: test
+  mode: single
+main_update_periodic_lights:
+  sequence:
+  - event: office_update_lights
+    event_data: {}
+  mode: single
+  alias: Main Update Periodic Lights
+bedroom_privacy:
+  alias: Bedroom Privacy
+  sequence:
+  - device_id: 63b9ded74bb862642883def47ac47612
+    domain: cover
+    entity_id: cover.bedroom_shade
+    type: set_position
+    position: 30
+  mode: single
+living_room_privacy:
+  alias: Living Room Privacy
+  sequence:
+  - service: cover.set_cover_position
+    target:
+      area_id: living_room
+    data:
+      position: 40
+  mode: single

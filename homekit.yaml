@@ -1,0 +1,189 @@
+### Office
+- name: office_hkb
+  port: 21063
+  filter:
+    include_entities:
+      # Light
+      - light.office_ceiling_nightlight
+      - light.lifx_office_wardrobe
+      - light.lifx_office_sofa
+      - light.lifx_office_screen
+      # Covers
+      - cover.office_shade
+      # Vacuum
+      - vacuum.office_roomba
+      # Scripts
+      - script.office_desk_main_fail_safe
+      # Switche
+      - switch.hybernate_max_pc
+      - light.office_ceiling
+
+  entity_config:
+    # Light
+    light.office_ceiling_nightlight:
+      name: Office Nightlight
+    light.lifx_office_wardrobe:
+      name: Office Wardrobe
+    light.lifx_office_sofa:
+      name: Office Sofa
+    light.lifx_office_screen:
+      name: Office Monitor
+    # Covers
+    cover.office_shade:
+      name: Office Shade
+    # Vacuum
+    vaccuum.office_roomba:
+      name: Office Roomba
+    # Scripts
+    script.office_desk_main_fail_safe:
+      name: Office Computer
+    # Switches
+    switch.hybernate_max_pc:
+      name: Office Hybernate my Computer
+
+### Bedroom
+- name: bedroom_hkb
+  port: 21064
+  filter:
+    include_entities:
+      # Light
+      - light.bedroom_ceiling_nightlight
+      - light.lifx_bedroom_bed
+      - light.bedroom_max_bedside
+      - light.lifx_bedroom_display
+      - light.bedroom_ambient
+      # Covers
+      - cover.bedroom_shade
+      # Scripts
+      - script.bedroom_privacy
+      - light.bedroom_ceiling
+      
+
+  entity_config:
+    # Light
+    light.bedroom_ceiling_nightlight:
+      name: Bedroom Nightlight
+    light.lifx_bedroom_wardrobe:
+      name: Bedroom Wardrobe
+    light.lifx_bedroom_bed:
+      name: Freya Bedside
+    light.bedroom_max_bedside:
+      name: Max Bedside
+    light.lifx_bedroom_display:
+      name: Bedroom Monitor
+    light.bedroom_ambient:
+      name: Bedroom Ambient
+    # Covers
+    cover.bedroom_shade:
+      name: Bedroom Shade
+    # Scripts
+    cover.bedroom_privacy:
+      name: Bedroom Privacy
+
+### Living Room
+- name: living_room_hkb
+  port: 21065
+  filter:
+    include_entities:
+      # Light
+      - light.lifx_living_room_sofa
+      - light.lifx_living_room_table
+      # Covers
+      - cover.living_room_shade_l
+      - cover.living_room_shade_r
+      # Vacuum
+      - vacuum.living_room_roomba
+      # Script
+      - script.living_room_privacy
+  entity_config:
+    # Light
+    light.lifx_living_room_sofa:
+      name: Living Room Sofa
+    light.lifx_living_room_table:
+      name: Living Room Table
+    # Covers
+    cover.living_room_shade_l:
+      name: Living Room Sofa Shade
+    cover.living_room_shade_r:
+      name: Living Room Table Shade
+    # Vacuum
+    vacuum.living_room_roomba:
+      name: Living Room Roomba
+    # Scripts
+    script.living_room_privacy:
+      name: Living Room Privacy
+
+### Hall
+- name: hall_hkb
+  port: 21066
+  filter:
+    include_entities:
+      # Light
+      - light.lifx_hall_one
+      - light.lifx_hall_two
+
+  entity_config:
+    # Light
+    light.lifx_hall_one:
+      name: Hall One
+    light.lifx_hall_two:
+      name: Hall Two
+
+### Bahtroom
+- name: bathroom_hkb
+  port: 21067
+  filter:
+    include_entities:
+      # Light
+      - light.lifx_bathroom_ceiling
+      - light.bathroom_mirror
+      # Automations
+      - automation.motion_light_bathroom
+  entity_config:
+    # Light
+    light.lifx_bathroom_ceiling:
+      name: Bahtroom Ceiling
+    light.bathroom_mirror:
+      name: Bathroom Mirror
+    # Automations
+    automation.motion_light_bathroom:
+      name: Bathroom Motion Light
+
+### Kitchen
+- name: kitchen_hkb
+  port: 21068
+  filter:
+    include_entities:
+      # Light
+      - light.kitchen_spot
+      - light.kitchen_cooking
+      - light.lifx_kitchen_ceiling
+      # Fan
+      - fan.kitchen_exhaust_fan
+  entity_config:
+    # Light
+    light.kitchen_spot:
+      name: Kitchen Spot
+    light.kitchen_cooking:
+      name: Kitchen Cooking
+    light.lifx_kitchen_ceiling:
+      name: Kitchen Ceiling
+    # Fan
+    fan.kitchen_exhaust_fan:
+      name: Kitchen Exhaust
+
+### ZzSetupzZ
+- name: zzSetupzz_hkb
+  port: 21069
+  filter:
+    include_entities:
+      # Scripts
+      - script.home_assistent_restart_appdameon
+      - script.home_assistent_restart_core
+  entity_config:
+    # Scripts
+    script.home_assistent_restart_appdameon:
+      name: Restart HA Appdaemon
+    script.home_assistent_restart_core:
+      name: Restart HA Core
+

@@ -1,0 +1,25 @@
+
+  - platform: statistics
+    name: Bathroom Humidity Stats long
+    entity_id: sensor.bathroom_lumi_weather_sensor_humidity
+    sampling_size: 40
+    max_age:
+      hours: 1
+
+  - platform: time_date
+    display_options:
+      - 'time'
+      - 'date'
+      - 'date_time'
+      - 'date_time_utc'
+      - 'date_time_iso'
+      - 'time_date'
+      - 'time_utc'
+      - 'beat'
+
+  - platform: dwd_weather_warnings  
+    region_name: 711000011 
+  
+    
+  - platform: dwd_weather_warnings  
+    region_name: 111000000 

@@ -1,0 +1,15 @@
+  bedroom_lights:
+    options:
+      - light.bedroom_ceiling
+      - light.bedroom_ceiling_nightlight
+      - light.bedroom_ambient
+      - light.lifx_bedroom_display
+
+  living_room_lights:
+    options:
+      - light.lifx_living_room_sofa
+      - light.lifx_living_room_table
+      - light.lg_living_room
+      - light.kitchen_spot
+
+      

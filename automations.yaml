@@ -1,0 +1,699 @@
+- id: '1614852290574'
+  alias: 'Postbox Mail Notification '
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.lumi_lumi_sensor_magnet_on_off
+  condition: []
+  action:
+  - service: notify.mobile_app_whiterabbit
+    data:
+      message: 'The mail is here! :) '
+  - service: notify.mobile_app_freyas_iphone
+    data:
+      message: The mail is here! :)
+  mode: single
+- id: '1615316736000'
+  alias: Kitchen Light Wall Switch Remote
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.bottom_mutual_shellyi3_remote
+    from:
+    - 'on'
+    - 'off'
+    to:
+    - 'on'
+    - 'off'
+  condition: []
+  action:
+  - type: toggle
+    device_id: 71bdf938d35371710190f13982c8fd9a
+    entity_id: light.lifx_kitchen_ceiling
+    domain: light
+  mode: restart
+- id: '1615317045718'
+  alias: Light Remote Living Room
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.mid_mutual_shellyi3_remote
+    from:
+    - 'on'
+    - 'off'
+    to:
+    - 'on'
+    - 'off'
+  condition: []
+  action:
+  - service: light.toggle
+    data: {}
+    target:
+      entity_id: light.lg_living_room
+  mode: restart
+- id: '1615317081015'
+  alias: Hall Light Wall Switch Remote
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.top_mutual_shellyi3_remote
+    from:
+    - 'on'
+    - 'off'
+    to:
+    - 'on'
+    - 'off'
+  condition: []
+  action:
+  - service: light.toggle
+    data: {}
+    target:
+      area_id: hall
+  mode: restart
+- id: '1615318020387'
+  alias: Light Remote Bedroom
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.bedroom_shelly_remote
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.sleep_mode
+        state: 'on'
+      sequence:
+      - service: light.toggle
+        data:
+          brightness: 30
+          transition: 1
+        target:
+          entity_id: light.bedroom_ambient
+    default:
+    - choose:
+      - conditions:
+        - condition: time
+          after: '21:00'
+          weekday:
+          - mon
+          - tue
+          - wed
+          - thu
+          - sun
+        sequence:
+        - service: light.toggle
+          data:
+            brightness_pct: 40
+          target:
+            entity_id: light.bedroom_ambient
+      default:
+      - service: light.toggle
+        data:
+          brightness_pct: 100
+        target:
+          entity_id: light.bedroom_ambient
+  mode: restart
+- id: '1615479835436'
+  alias: Light Remote Guest WC
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.guest_wc_remote
+    to:
+    - 'on'
+    - 'off'
+    from:
+    - 'on'
+    - 'off'
+  condition: []
+  action:
+  - service: light.toggle
+    data: {}
+    target:
+      entity_id: light.lifx_guest_wc_ceiling
+  mode: restart
+- id: '1615479873916'
+  alias: 'Bathroom Light Wall Switch Remote '
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.bathroom_remote
+    from:
+    - 'on'
+    - 'off'
+    to: on,off
+  condition: []
+  action:
+  - service: light.toggle
+    data: {}
+    target:
+      entity_id: light.lifx_bathroom_ceiling
+  mode: restart
+- id: '1615494969540'
+  alias: Office Light Wall Switch Remote
+  description: ''
+  trigger:
+  - type: turned_on
+    platform: device
+    device_id: 7a1ecd0b2ffa25b732efd86b6da0d511
+    entity_id: binary_sensor.office_shelly_remote
+    domain: binary_sensor
+  - type: turned_off
+    platform: device
+    device_id: 7a1ecd0b2ffa25b732efd86b6da0d511
+    entity_id: binary_sensor.office_shelly_remote
+    domain: binary_sensor
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        state: 'on'
+        entity_id: light.lg_internal_office_all
+      sequence:
+      - service: light.turn_off
+        target:
+          entity_id: light.lg_internal_office_all
+    default:
+    - service: light.turn_on
+      data: {}
+      target:
+        entity_id: light.lg_office_ambient
+  mode: restart
+- id: '1615514964078'
+  alias: Hall Motion Activated Light
+  description: ''
+  use_blueprint:
+    path: freakshock88/motion_illuminance_activated_entity.yaml
+    input:
+      target_entity: light.lg_hall
+      no_motion_wait: input_number.hall_motion_timeout
+      motion_sensor: binary_sensor.hall_lumi_motion_sensor_ias_zone
+      illuminance_cutoff: input_number.hall_motion_lux_threshold
+      illuminance_sensor: sensor.hall_lumi_illuminance_sensor
+      blocker_entity: binary_sensor.the_projector_is_on_off
+- id: '1615517122615'
+  alias: Bathroom Motion Light
+  description: ''
+  use_blueprint:
+    path: freakshock88/motion_illuminance_activated_entity.yaml
+    input:
+      target_entity: light.lifx_bathroom_ceiling
+      no_motion_wait: input_number.bathroom_motion_timeout
+      turn_off_blocker_entity: binary_sensor.bathroom_shower_occupancy
+      motion_sensor: binary_sensor.bathroom_lumi_motion_sensor_ias_zone
+- id: '1615518342316'
+  alias: Guest WC Motion Light
+  description: ''
+  use_blueprint:
+    path: freakshock88/motion_illuminance_activated_entity.yaml
+    input:
+      motion_sensor: binary_sensor.guest_wc_lumi_motion_sensor_ias_zone
+      target_entity: light.lifx_guest_wc_ceiling
+      no_motion_wait: input_number.guest_wc_motion_timeout
+- id: '1615602131663'
+  alias: Kitchen Exhaust Fan Automatic Mode
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.kitchen_someone_is_cooking
+    from:
+    - 'on'
+    - 'off'
+    to:
+    - 'on'
+    - 'off'
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.kitchen_someone_is_cooking
+        state: 'on'
+      sequence:
+      - device_id: c8bfb20bb8775a326709ff73c5a26558
+        domain: fan
+        entity_id: fan.kitchen_exhaust_fan
+        type: turn_on
+    default:
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 30
+        milliseconds: 0
+    - device_id: c8bfb20bb8775a326709ff73c5a26558
+      domain: fan
+      entity_id: fan.kitchen_exhaust_fan
+      type: turn_off
+  mode: restart
+- id: '1615608175389'
+  alias: Sleep Mode OFF at 07:00
+  description: ''
+  trigger:
+  - platform: time
+    at: 07:00:00
+  condition: []
+  action:
+  - service: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.sleep_mode
+  mode: single
+- id: '1615759399024'
+  alias: 'Shades open to 40% at 07:00 '
+  description: Shades open to 40% at 07:00 if "someone_home" is on and fronts shades
+    are below 40%
+  trigger:
+  - platform: time
+    at: 07:00:00
+  condition:
+  - condition: numeric_state
+    below: '40'
+    entity_id: cover.front_shades_internal
+    attribute: current_position
+  - condition: state
+    entity_id: binary_sensor.someone_home
+    state: 'on'
+  action:
+  - service: cover.set_cover_position
+    data:
+      position: 40
+    target:
+      area_id:
+      - living_room
+  mode: single
+- id: '1615897188906'
+  alias: Tracking Notify Freya Leaving Work
+  description: ''
+  trigger:
+  - platform: device
+    device_id: aff81a9e8835b0e9a55773ff16ae8214
+    domain: device_tracker
+    entity_id: device_tracker.freyas_iphone
+    type: leaves
+    zone: zone.freya_work
+  condition: []
+  action:
+  - service: notify.mobile_app_whiterabbit
+    data:
+      message: 'Freya left work. '
+  mode: single
+- id: '1615903095398'
+  alias: Tracking Notify Freya is coming home?
+  description: ''
+  trigger:
+  - platform: device
+    device_id: aff81a9e8835b0e9a55773ff16ae8214
+    domain: device_tracker
+    entity_id: device_tracker.freyas_iphone
+    type: enters
+    zone: zone.some_one_getting_home
+  condition: []
+  action:
+  - service: notify.mobile_app_whiterabbit
+    data:
+      message: 'Freya is 4000m away from home! :) '
+  mode: single
+- id: '1615929249884'
+  alias: Bedroom Shade Auto close when showering
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.bathroom_shower_occupancy
+    to: 'on'
+  condition: []
+  action:
+  - device_id: 63b9ded74bb862642883def47ac47612
+    domain: cover
+    entity_id: cover.bedroom_shade
+    type: set_position
+    position: 40
+  mode: single
+- id: '1616197906620'
+  alias: 'Freya is moving again '
+  description: ''
+  trigger:
+  - platform: device
+    device_id: aff81a9e8835b0e9a55773ff16ae8214
+    domain: device_tracker
+    entity_id: device_tracker.freyas_iphone
+    type: leaves
+    zone: zone.freya_colleague_1
+  condition: []
+  action:
+  - service: notify.mobile_app_whiterabbit
+    data:
+      message: 'freya left here friend '
+  mode: single
+- id: '1617194628740'
+  alias: Shade Automation
+  description: ''
+  trigger:
+  - platform: time
+    at: 07:30:00
+  - platform: time
+    at: '21:30:00'
+  condition:
+  - condition: state
+    entity_id: binary_sensor.someone_home
+    state: 'off'
+  action:
+  - choose:
+    - conditions:
+      - condition: time
+        after: 07:29:00
+        before: 07:31:00
+      sequence:
+      - service: cover.open_cover
+        target:
+          entity_id: cover.all_shades_internal
+    - conditions:
+      - condition: time
+        after: '21:29'
+        before: '21:31'
+      sequence:
+      - service: cover.close_cover
+        target:
+          entity_id: cover.all_shades_internal
+    default: []
+  mode: single
+- id: '1617195179216'
+  alias: Cleaning Automation
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.someone_home
+    from: 'on'
+    to: 'off'
+    for: 00:05:00
+  condition:
+  - condition: state
+    entity_id: input_boolean.cleaned_today
+    state: 'off'
+  action:
+  - service: input_boolean.turn_on
+    target:
+      entity_id: input_boolean.cleaned_today
+  - device_id: d8d3bc2e142783a91b5aaa830508a270
+    domain: vacuum
+    entity_id: vacuum.living_room_roomba
+    type: clean
+  - service: notify.awsome_people
+    data:
+      message: 'Living Room Roomba started cleaning! '
+  mode: single
+- id: '1617195394029'
+  alias: 'Roomba Cleaned Today Reset '
+  description: ''
+  trigger:
+  - platform: time
+    at: 00:00:00
+  condition: []
+  action:
+  - service: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.cleaned_today
+  mode: single
+- id: '1617849792005'
+  alias: Kitchen Cooking Off When Spot off
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_off
+    device_id: c8bfb20bb8775a326709ff73c5a26558
+    entity_id: light.kitchen_spot
+    domain: light
+  condition: []
+  action:
+  - type: turn_off
+    device_id: 6b54ae295d297f9368f15ed1e9199658
+    entity_id: light.kitchen_cooking
+    domain: light
+  mode: single
+- id: '1618166810490'
+  alias: Appliance has finished Washing Machine
+  description: ''
+  use_blueprint:
+    path: sbyx/notify-or-do-something-when-an-appliance-like-a-dishwasher-or-washing-machine-finishes.yaml
+    input:
+      power_sensor: sensor.waschingmachine_power
+      actions:
+      - service: notify.awsome_people
+        data:
+          message: 'The Washing Machine has finished! '
+- id: '1618167235681'
+  alias: Appliance has finished Dryer
+  description: ''
+  use_blueprint:
+    path: sbyx/notify-or-do-something-when-an-appliance-like-a-dishwasher-or-washing-machine-finishes.yaml
+    input:
+      power_sensor: sensor.dryer_power
+      actions:
+      - service: notify.awsome_people
+        data:
+          message: The dryer has finished!
+- id: '1621664668004'
+  alias: Kitchen Cooking Fan Slide Remote
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.kitchen_cooking_magnet_sensor
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - type: is_open
+        condition: device
+        device_id: 1bb0c9c759bbbb1b8fc73718a112a890
+        entity_id: binary_sensor.kitchen_cooking_magnet_sensor
+        domain: binary_sensor
+      sequence:
+      - type: turn_on
+        device_id: 6b54ae295d297f9368f15ed1e9199658
+        entity_id: light.kitchen_cooking
+        domain: light
+    - conditions:
+      - type: is_not_open
+        condition: device
+        device_id: 1bb0c9c759bbbb1b8fc73718a112a890
+        entity_id: binary_sensor.kitchen_cooking_magnet_sensor
+        domain: binary_sensor
+      sequence:
+      - type: turn_off
+        device_id: 6b54ae295d297f9368f15ed1e9199658
+        entity_id: light.kitchen_cooking
+        domain: light
+    default: []
+  mode: single
+- id: '1621762109830'
+  alias: Kitchen Spot Motion Activated Light
+  description: ''
+  use_blueprint:
+    path: freakshock88/motion_illuminance_activated_entity.yaml
+    input:
+      motion_sensor: binary_sensor.kitche_lumi_motion_sensor_ias_zone
+      target_entity: light.kitchen_spot
+      no_motion_wait: input_number.kitchen_motion_timeout
+      blocker_entity: binary_sensor.the_projector_is_on_off
+      turn_off_blocker_entity: binary_sensor.kitchen_someone_is_cooking
+      time_limit_after: input_datetime.kitchen_spot_automation_run_after
+      time_limit_before: input_datetime.kitchen_light_automation
+- id: '1621763361739'
+  alias: Kitchen Cooking Motion Activated Light
+  description: ''
+  use_blueprint:
+    path: freakshock88/motion_illuminance_activated_entity.yaml
+    input:
+      motion_sensor: binary_sensor.kitche_lumi_motion_sensor_ias_zone
+      target_entity: light.kitchen_cooking
+      blocker_entity: binary_sensor.the_projector_is_on_off
+      no_motion_wait: input_number.kitchen_motion_timeout
+      target_off_entity: binary_sensor.kitchen_someone_is_cooking
+- id: '1621877307059'
+  alias: Bathroom Motion Auto on after 2h if off
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: automation.motion_light_bathroom
+    to: 'off'
+    for: 02:00:00
+  condition: []
+  action:
+  - service: automation.turn_on
+    target:
+      entity_id: automation.motion_light_bathroom
+  mode: single
+- id: '1626336700884'
+  alias: Sleep Mode ON at 00:00
+  description: ''
+  trigger:
+  - platform: time
+    at: 00:00
+  condition: []
+  action:
+  - service: input_boolean.turn_on
+    target:
+      entity_id: input_boolean.sleep_mode
+  mode: single
+- id: '1626337328747'
+  alias: Adaptive Light Night Mode Automation
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_boolean.sleep_mode
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.sleep_mode
+        state: 'on'
+      sequence:
+      - service: homeassistant.turn_on
+        target:
+          entity_id:
+          - switch.adaptive_lighting_sleep_mode_bathroom
+          - switch.adaptive_lighting_sleep_mode_guest_wc
+          - switch.adaptive_lighting_sleep_mode_main
+          - switch.adaptive_lighting_sleep_mode_max_bedside
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.sleep_mode
+        state: 'off'
+      sequence:
+      - service: homeassistant.turn_off
+        target:
+          entity_id:
+          - switch.adaptive_lighting_sleep_mode_bathroom
+          - switch.adaptive_lighting_sleep_mode_guest_wc
+          - switch.adaptive_lighting_sleep_mode_main
+          - switch.adaptive_lighting_sleep_mode_max_bedside
+    default: []
+  mode: single
+- id: '1626587597499'
+  alias: Laundry Water Leak Alarm
+  description: ''
+  trigger:
+  - type: moist
+    platform: device
+    device_id: ab6833327d6a2d30f1eed912db392705
+    entity_id: binary_sensor.laundry_lumi_sensor_water_leak
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  condition: []
+  action:
+  - service: notify.awsome_people
+    data:
+      message: Important!!! The laundry has a water leak! Im HWR läuft Wasser aus!
+  mode: single
+- id: '1626593695993'
+  alias: Terrace Lampions Automation
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sun.sun
+    id: 'on'
+    attribute: elevation
+    below: '2.5'
+  - platform: numeric_state
+    entity_id: sun.sun
+    id: 'off'
+    attribute: elevation
+    above: '0'
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: 'on'
+      sequence:
+      - type: turn_on
+        device_id: f465a04724946d6c0abc3c9d24aac47a
+        entity_id: switch.terrace_lampions
+        domain: switch
+    - conditions:
+      - condition: trigger
+        id: 'off'
+      sequence:
+      - type: turn_off
+        device_id: f465a04724946d6c0abc3c9d24aac47a
+        entity_id: switch.terrace_lampions
+        domain: switch
+    default: []
+  mode: single
+- id: '1626770047922'
+  alias: New Automation
+  description: ''
+  trigger:
+  - platform: event
+    event_type: state_changed
+    event_data:
+      entity_id: input_boolean.tester_input
+      new_state: 'on'
+  condition: []
+  action:
+  - service: input_boolean.toggle
+    target:
+      entity_id: input_boolean.tester_output
+  mode: single
+- id: '1628800427627'
+  alias: test
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.last_active_sensor
+  condition: []
+  action:
+  - service: input_boolean.toggle
+    target:
+      entity_id: input_boolean.tester_input
+  mode: single
+- id: '1628920325018'
+  alias: Office Desk PC - Peripherals Automation
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.max_pc_in_use
+    to: 'on'
+    id: 'on'
+  - platform: state
+    entity_id: binary_sensor.max_pc_in_use
+    id: 'off'
+    to: 'off'
+    for: 00:00:30
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: 'on'
+      sequence:
+      - type: turn_on
+        device_id: da1a4bc5c2a0a98537e1815a652ff349
+        entity_id: switch.office_desk_peripherals
+        domain: switch
+    - conditions:
+      - condition: trigger
+        id: 'off'
+      sequence:
+      - type: turn_off
+        device_id: da1a4bc5c2a0a98537e1815a652ff349
+        entity_id: switch.office_desk_peripherals
+        domain: switch
+    default: []
+  mode: single
+- id: '1628973798065'
+  alias: Appliance has finished Dischwasher
+  description: ''
+  use_blueprint:
+    path: sbyx/notify-or-do-something-when-an-appliance-like-a-dishwasher-or-washing-machine-finishes.yaml
+    input:
+      power_sensor: sensor.dishwasher_wattage
+      actions:
+      - service: notify.awsome_people
+        data:
+          message: 'The Dishwasher Machine has finished! '

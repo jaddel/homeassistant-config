@@ -1,0 +1,70 @@
+  - platform: group
+    name: LG Hall
+    entities:
+      - light.lifx_hall_one
+      - light.lifx_hall_two
+
+  - platform: group
+    name: LG Office Screen
+    entities:
+      - light.lifx_screen_one
+      - light.lifx_office_screen
+      - light.lifx_screen_three
+
+  - platform: group
+    name: LG Office
+    entities:
+      - light.lifx_office_screen
+      - light.lifx_office_wardrobe
+  
+  - platform: group
+    name: LG_internal Office All 
+    entities:
+      - light.lifx_office_screen
+      - light.lifx_office_wardrobe
+      - light.office_yeelight_ceiling
+      - light.office_yeelight_ceiling_nightlight
+      - light.lifx_screen_one
+      #- light.lifx_screen_two
+      - light.lifx_screen_three
+  - platform: group
+    name: LG Office Ambient
+    entities:
+      - light.lifx_office_wardrobe
+      - light.lifx_office_screen
+      - light.lifx_screen_one
+      #- light.lifx_screen_two
+      - light.lifx_screen_three
+
+  - platform: group
+    name: LG Main
+    entities:
+      - light.lifx_hall_one
+      - light.lifx_hall_two
+      - light.lifx_living_room_table
+      - light.lifx_living_room_sofa
+      - light.lifx_kitchen_ceiling
+
+  - platform: group
+    name: LG_internal Main
+    entities:
+      - light.lifx_hall_one
+      - light.lifx_hall_two
+      - light.lifx_living_room_table
+      - light.lifx_living_room_sofa
+      - light.lifx_kitchen_ceiling
+      - light.kitchen_spot
+      - light.kitchen_cooking
+
+  - platform: group
+    name: LG Living Room
+    entities:
+      - light.lifx_living_room_table
+      - light.lifx_living_room_sofa
+
+  - platform: group
+    name: Bedroom Ambient
+    entities:
+      - light.lifx_bedroom_bed
+      - light.lifx_bedroom_wardrobe
+      

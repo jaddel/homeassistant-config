@@ -1,0 +1,5 @@
+#guest_wc_motion_light:
+#  sensors:
+#    - binary_sensor.guest_wc_lumi_motion_sensor_ias_zone
+#  entitys:
+#    - light.lifx_guest_wc_ceiling

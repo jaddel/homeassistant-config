@@ -1,0 +1,132 @@
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+light: !include lights.yaml
+switch: !include switches.yaml
+lifx: !include lifx.yaml
+sensor: !include sensors.yaml
+binary_sensor: !include binary_sensors.yaml
+homekit: !include homekit.yaml
+input_select: !include input_selects.yaml
+entity_controller: !include entity_conroller.yaml
+
+homeassistant:
+  customize: !include customize.yaml
+
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.30.33.0/24 # Add the IP address of the proxy server
+
+logger:
+  default: warning
+  logs:
+    homeassistant.components.homekit: debug
+    pyhap: debug
+
+recorder:
+  db_url: !secret mariadb_url
+  auto_purge: true
+  purge_keep_days: 10
+  exclude:
+    entity_globs:
+      - sensor.time*
+      - sensor.date_*
+    entities:
+      - sensor.internet_time
+
+##InfluxDB
+influxdb:
+  host: a0d7b954-influxdb
+  port: 8086
+  database: !secret influxdb_database
+  username: !secret influxdb_user
+  password: !secret influxdb_password
+  max_retries: 10
+  default_measurement: state
+  exclude:
+    entity_globs:
+      - sensor.time*
+      - sensor.date_*
+    entities:
+      - light.bedroom_ceiling
+      - light.bedroom_ceiling_nightlight
+
+##Octoprint
+
+#octoprint:
+#  host: http://10.25.10.15
+#  api_key: EF22B285621A4E088E982A498DF949D5
+#  name: CR10
+#  number_of_tools: 1
+#  bed: 1
+#  sensors:
+#    monitored_conditions:
+#      - 'Current State'
+#      - 'Job Percentage'
+#      - 'Time Elapsed'
+#      - 'Time Remaining'
+#      - 'Temperatures'
+
+##Counter
+counter:
+  counter_roomba_living_room:
+    name: Roomba Living Roonm runs/day
+    icon: mdi:robot-vacuum
+  counter_roomba_office:
+    name: Roomba Office runs/day
+    icon: mdi:robot-vacuum
+
+##Telegram Bot
+#telegram_bot:
+#  - platform: polling
+#    api_key: !secret telegram_api_key
+#    allowed_chat_ids:
+#      - !secret telegram_id_max #Maxs
+#      - !secret telegram_id_siri #Siri Group
+#
+###Notify
+#notify:
+#  - name: Siri@Group
+#    platform: telegram
+#    chat_id: !secret telegram_id_siri
+#  - name: Siri@Max
+#    platform: telegram
+#    chat_id: !secret telegram_id_max
+
+cover:
+  - platform: group
+    name: Living Room Shades
+    entities:
+      - cover.living_room_shade_l
+      - cover.living_room_shade_r
+
+  - platform: group
+    name: All Shades internal
+    entities:
+      - cover.living_room_shade_l
+      - cover.living_room_shade_r
+      - cover.office_shade
+      - cover.bedroom_shade
+
+  - platform: group
+    name: Front Shades internal
+    entities:
+      - cover.living_room_shade_l
+      - cover.living_room_shade_r
+      - cover.office_shade
+
+notify:
+  - name: Awsome People
+    platform: group
+    services:
+      - service: mobile_app_freyas_iphone
+      - service: mobile_app_whiterabbit

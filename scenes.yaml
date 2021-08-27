@@ -1,0 +1,75 @@
+- id: '1615328090627'
+  name: Hall Morning
+  entities:
+    light.hall:
+      min_mireds: 111
+      max_mireds: 400
+      effect_list:
+      - effect_stop
+      - effect_pulse
+      - effect_colorloop
+      brightness: 23
+      color_temp: 400
+      entity_id:
+      - light.hall_ceiling_one
+      - light.hall_ceiling_two
+      friendly_name: Hall
+      icon: mdi:lightbulb-group
+      supported_features: 55
+      state: 'on'
+- id: '1615328103064'
+  name: Hall Evening
+  entities:
+    light.hall:
+      min_mireds: 111
+      max_mireds: 400
+      effect_list:
+      - effect_colorloop
+      - effect_pulse
+      - effect_stop
+      brightness: 178
+      hs_color:
+      - 14.063
+      - 57.142
+      rgb_color:
+      - 255
+      - 143
+      - 109
+      xy_color:
+      - 0.531
+      - 0.345
+      entity_id:
+      - light.hall_ceiling_one
+      - light.hall_ceiling_two
+      friendly_name: Hall
+      icon: mdi:lightbulb-group
+      supported_features: 55
+      state: 'on'
+- id: '1615328125196'
+  name: Hall Nightlight
+  entities:
+    light.hall:
+      min_mireds: 111
+      max_mireds: 400
+      effect_list:
+      - effect_colorloop
+      - effect_pulse
+      - effect_stop
+      brightness: 5
+      hs_color:
+      - 35.157
+      - 93.623
+      rgb_color:
+      - 255
+      - 156
+      - 16
+      xy_color:
+      - 0.572
+      - 0.404
+      entity_id:
+      - light.hall_ceiling_one
+      - light.hall_ceiling_two
+      friendly_name: Hall
+      icon: mdi:lightbulb-group
+      supported_features: 55
+      state: 'on'
