@@ -1,0 +1,113 @@
+#Variables
+substitutions:
+  device_name: shelly_1_remote_office_multi
+  friendly_name: Office Shelly Remote
+  
+# Basic Config
+esphome:
+  name: "${device_name}"
+  platform: ESP8266
+  board: esp01_1m
+  build_path: ./build/${device_name}
+  
+wifi:
+  use_address: 10.25.30.105
+logger:
+  level: VERBOSE  
+packages:
+  #Wifi Settings
+  wifi: !include includes/network.yaml
+
+#Device Specific Config
+
+switch:
+  - platform: gpio
+    pin: GPIO4
+    name: "${friendly_name}"
+    restore_mode: ALWAYS_OFF
+    internal: true
+
+binary_sensor:                         
+  - platform: homeassistant
+    entity_id: input_boolean.esphome_switch_debugger
+    #pin: GPIO5                              
+    name: "${friendly_name}"
+    on_multi_click:
+    
+    #Single Click
+    - timing:
+        - OFF for at least 1s
+        - ON for at least 1s
+      invalid_cooldown : 1s
+      then:
+      - logger.log: single_click1
+      - homeassistant.event:
+          event: esphome.switch
+          data:
+            title: single_click1
+            
+    - timing:
+
+        - ON for at least 1s 
+        - OFF for at least 1s
+      invalid_cooldown : 1s
+      then:
+      - logger.log: single_click2
+      - homeassistant.event:
+          event: esphome.switch
+          data:
+            title: single_click2
+    
+    #Double Click
+    - timing:
+
+        - ON for at most 1s
+        - OFF for at least 1s
+      invalid_cooldown : 2s
+      then:
+      - logger.log: double_click1
+      - homeassistant.event:
+          event: esphome.switch
+          data:
+            title: double_click1
+            
+    - timing:
+
+        - OFF for at most 1s
+        - ON for at least 1s
+      invalid_cooldown : 2s
+      then:
+      - logger.log: double_click2
+      - homeassistant.event:
+          event: esphome.switch
+          data:
+            title: double_click2
+
+    #Triple Click
+    - timing:
+
+        - ON for at most 1s
+        - OFF for at most 1s
+        - ON for at least 1s
+      invalid_cooldown : 1s
+      then:
+      - logger.log: triple_click1
+      - homeassistant.event:
+          event: esphome.switch
+          data:
+            title: triple_click1
+            
+    - timing:
+
+        - OFF for at most 1s
+        - ON for at most 1s
+        - OFF for at least 1s
+      invalid_cooldown : 1s
+      then:
+      - logger.log: triple_click2
+      - homeassistant.event:
+          event: esphome.switch
+          data:
+            title: triple_click2
+
+

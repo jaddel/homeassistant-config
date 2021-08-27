@@ -1,0 +1,316 @@
+## Office
+
+office_shade:
+  module: controllerx
+  class: E1743CoverController
+  controller: 68:0a:e2:ff:fe:81:32:4d
+  integration: zha
+  cover: cover.office_shade
+
+office_lights:
+  module: controllerx
+  class: E1810Controller
+  controller: bc:33:ac:ff:fe:97:7a:30
+  integration: zha
+  light: "{{ states('input_select.office_lights') }}"
+  # This is recommendable if the lights you want to loop through have different supported actions
+  update_supported_features: true
+  merge_mapping:
+    press_257_13_0:
+      - service: input_select.select_previous
+        data:
+          entity_id: input_select.office_lights
+    press_256_13_0:
+      - service: input_select.select_next
+        data:
+          entity_id: input_select.office_lights
+
+## Kitchen
+
+kitchen_cooking_fan_slide_remote:
+  module: controllerx
+  class: LightController
+  integration: state
+  controller: binary_sensor.kitchen_cooking_magnet_sensor
+  light: light.kitchen_cooking
+  mapping:
+    "on": "on"
+    "off": "off"
+
+kitchen_wall_switch_remote: #Living Room
+  module: controllerx
+  class: LightController
+  integration: state
+  controller: binary_sensor.bottom_mutual_shellyi3_remote
+  light: light.lifx_kitchen_ceiling
+  mapping:
+    "on": "toggle"
+    "off": "toggle"
+
+## Bathroom
+
+bathroom_wall_switch_remote:
+  module: controllerx
+  class: LightController
+  integration: state
+  controller: binary_sensor.bathroom_remote
+  light: light.lifx_bathroom_ceiling
+  mapping:
+    "on": "toggle"
+    "off": "toggle"
+
+## Guest WC
+
+guest_wc_wall_switch_remote:
+  module: controllerx
+  class: LightController
+  integration: state
+  controller: binary_sensor.guest_wc_remote
+  light: light.lifx_guest_wc_ceiling
+  mapping:
+    "on": "toggle"
+    "off": "toggle"
+
+## Living Room
+living_room_shade:
+  module: controllerx
+  class: E1743CoverController
+  controller: 58:8e:81:ff:fe:30:4a:ff
+  integration: zha
+  cover: cover.living_room_shades
+
+living_room_wall_switch_remote:
+  module: controllerx
+  class: LightController
+  integration: state
+  controller: binary_sensor.mid_mutual_shellyi3_remote
+  light: light.lg_living_room
+  mapping:
+    "on": "toggle"
+    "off": "toggle"
+
+living_room_sofa_light:
+  module: controllerx
+  class: E1743Controller
+  controller: 58:8e:81:ff:fe:2b:b6:1e
+  integration: zha
+  light: light.lifx_living_room_sofa
+  min_brightness: 4
+  max_brightness: 255
+
+living_room_lights:
+  module: controllerx
+  class: E1810Controller
+  controller: bc:33:ac:ff:fe:96:2a:bd
+  integration: zha
+  light: "{{ states('input_select.living_room_lights') }}"
+  # This is recommendable if the lights you want to loop through have different supported actions
+  update_supported_features: true
+  merge_mapping:
+    press_257_13_0:
+      - service: input_select.select_previous
+        data:
+          entity_id: input_select.living_room_lights
+    press_256_13_0:
+      - service: input_select.select_next
+        data:
+          entity_id: input_select.living_room_lights
+
+hall_wall_switch_remote:
+  module: controllerx
+  class: LightController
+  integration: state
+  controller: binary_sensor.top_mutual_shellyi3_remote
+  light: light.lg_hall
+  mapping:
+    "on": "toggle"
+    "off": "toggle"
+
+## Bedroom
+
+bedroom_max_bedsight_light:
+  module: controllerx
+  class: E1810Controller
+  controller: 14:b4:57:ff:fe:51:56:cc
+  integration: zha
+  light: light.bedroom_max_bedside
+
+bedroom_freya_bedside_light:
+  module: controllerx
+  class: E1810Controller
+  controller: bc:33:ac:ff:fe:8d:18:35
+  integration: zha
+  light: light.lifx_bedroom_bed
+
+bedroom_wall_switch_remote:
+  module: controllerx
+  class: LightController
+  integration: state
+  controller: binary_sensor.bedroom_shelly_remote
+  light: light.bedroom_ambient
+  mapping:
+    "on": "toggle"
+    "off": "toggle"
+
+bedroom_shade:
+  module: controllerx
+  class: E1743CoverController
+  controller: 58:8e:81:ff:fe:17:47:41
+  integration: zha
+  cover: cover.bedroom_shade
+
+bedroom_lights:
+  module: controllerx
+  class: E1810Controller
+  controller: bc:33:ac:ff:fe:95:4f:8f
+  integration: zha
+  light: "{{ states('input_select.bedroom_lights') }}"
+  # This is recommendable if the lights you want to loop through have different supported actions
+  update_supported_features: true
+  merge_mapping:
+    press_257_13_0:
+      - service: input_select.select_previous
+        data:
+          entity_id: input_select.bedroom_lights
+    press_256_13_0:
+      - service: input_select.select_next
+        data:
+          entity_id: input_select.bedroom_lights
+
+## Periodic lights / Adaptive Lights
+# https://www.waveformlighting.com/tech/calculate-color-temperature-cct-from-cie-1931-xy-coordinates
+bathroom_periodic_lights:
+  module: update_lights
+  class: update_lights
+  entities:
+    - light.lifx_bathroom_ceiling
+  run_every: 180
+  event_subscription: bathroom_update_lights
+  #  start_time: 10:45
+  #  end_time: 23:00
+  #  start_index: '17:00:00'
+  #  end_index: '08:00:00'
+  brightness_threshold: 25
+  #  color_temp_unit: 'mired'
+  #  color_temp_max: 250
+  #  color_temp_min: 500
+  color_unit: "xy"
+  color_min:
+  - 0.643
+  - 0.334
+  color_max:
+    - 0.337 #450, 380 warm day wite
+    - 0.345
+  brightness_unit: "percent"
+  max_brightness_level: 100
+  min_brightness_level: 1
+  disable_entity: 
+    - input_boolean.disable_periodic_lights
+
+  sleep_entity:
+    - input_boolean.sleep_mode
+  #  sleep_color_temp: 'mired'
+  sleep_color: 'chocolate'
+  transition: 5 # Light transition time, 5s default.
+  sensor_log: sensor.bathroom_periodic_light
+  watch_light_state: True # Whether or not to watch individual lights and adjust them when they are turned on
+  keep_lights_on: False
+  start_lights_on: False # Turn on the lights at the start time
+  stop_lights_off: False # Turn off the lights at the stop time
+
+guest_wc_periodic_lights:
+  module: update_lights
+  class: update_lights
+  entities:
+    - light.lifx_guest_wc_ceiling
+  run_every: 180
+  event_subscription: guest_wc_update_lights
+  brightness_threshold: 25
+  color_unit: "xy"
+  color_min:
+  - 0.643
+  - 0.334
+  color_max:
+    - 0.337 #450, 380 warm day wite
+    - 0.345
+  brightness_unit: "percent"
+  max_brightness_level: 100
+  min_brightness_level: 1
+  disable_entity: 
+    - input_boolean.disable_periodic_lights
+
+  sleep_entity:
+    - input_boolean.sleep_mode
+  sleep_color: 'chocolate'
+  transition: 5 # Light transition time, 5s default.
+  sensor_log: sensor.guest_wc_periodic_light
+  watch_light_state: True # Whether or not to watch individual lights and adjust them when they are turned on
+  keep_lights_on: False
+  start_lights_on: False # Turn on the lights at the start time
+  stop_lights_off: False # Turn off the lights at the stop time
+
+office_periodic_lights:
+  module: update_lights
+  class: update_lights
+  entities:
+    - light.lifx_office_wardrobe
+    - light.lifx_office_screen
+  run_every: 180
+  event_subscription: office_update_lights
+  brightness_threshold: 25
+  color_unit: "xy"
+  color_min:
+  - 0.643
+  - 0.334
+  color_max:
+    - 0.337 #450, 380 warm day wite
+    - 0.345
+  brightness_unit: "percent"
+  max_brightness_level: 100
+  min_brightness_level: 1
+  disable_entity: 
+    - input_boolean.disable_periodic_lights
+    
+  #sleep_entity:
+  #  - input_boolean.sleep_mode
+  sleep_color: 'chocolate'
+  transition: 5 # Light transition time, 5s default.
+  sensor_log: sensor.office_periodic_light
+  watch_light_state: True # Whether or not to watch individual lights and adjust them when they are turned on
+  keep_lights_on: False
+  start_lights_on: False # Turn on the lights at the start time
+  stop_lights_off: False # Turn off the lights at the stop time
+
+bedroom_periodic_lights:
+  module: update_lights
+  class: update_lights
+  entities:
+    - light.lifx_bedroom_wardrobe
+    - light.lifx_bedroom_bed
+  run_every: 180
+  event_subscription: office_update_lights
+  brightness_threshold: 25
+  color_unit: "xy"
+  color_min:
+  - 0.643
+  - 0.334
+  color_max:
+    - 0.337 #450, 380 warm day wite
+    - 0.345
+  brightness_unit: "percent"
+  max_brightness_level: 100
+  min_brightness_level: 1
+  disable_entity:
+    - input_boolean.disable_periodic_lights
+  #    - input_boolean.hold_lights,on
+  #    - input_boolean.disco,on
+  #    - sensor.arbitrary_sensor,arbitrary_condition
+  #sleep_entity:
+  #  - input_boolean.sleep_mode
+  sleep_color: 'chocolate'
+  transition: 5 # Light transition time, 5s default.
+  sensor_log: sensor.bedroom_periodic_light
+  watch_light_state: True # Whether or not to watch individual lights and adjust them when they are turned on
+  keep_lights_on: False
+  start_lights_on: False # Turn on the lights at the start time
+  stop_lights_off: False # Turn off the lights at the stop time

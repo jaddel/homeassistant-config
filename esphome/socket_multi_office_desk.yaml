@@ -1,0 +1,58 @@
+substitutions:
+  device_name: socket_multi_office_desk
+  friendly_name: Office Desk Multi Socket
+
+esphome:
+  name: "${device_name}"
+  platform: ESP8266
+  board: esp01_1m
+  build_path: ./build/${device_name}
+  board_flash_mode: dout
+
+#wifi:
+#  use_address: 10.25.30.100
+  
+packages:
+  #Wifi Settings
+  wifi: !include includes/network.yaml
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO3
+      inverted: false
+    name: "${friendly_name} Button"
+    internal: true 
+    
+
+switch:
+  - platform: gpio
+    name: "${friendly_name} Nubert"
+    pin: GPIO05
+    id: nubert
+    restore_mode: ALWAYS_ON
+  - platform: gpio
+    name: "${friendly_name} Display"
+    pin: GPIO04
+    id: display
+    restore_mode: ALWAYS_ON
+  - platform: gpio
+    name: "${friendly_name} PC"
+    pin: GPIO12
+    id: macbook
+    restore_mode: ALWAYS_ON
+  - platform: gpio
+    name: "${friendly_name} Desk"
+    pin: GPIO13
+    id: desk
+    restore_mode: ALWAYS_ON
+  - platform: gpio
+    name: "${friendly_name} USB"
+    pin: GPIO14
+    id: usb
+    restore_mode: ALWAYS_ON
+  - platform: gpio
+    name: "${friendly_name} LED"
+    pin: GPIO01
+    restore_mode: ALWAYS_OFF
+    internal: true

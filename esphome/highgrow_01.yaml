@@ -1,0 +1,40 @@
+#Variables
+substitutions:
+  device_name: highgrow_01
+  friendly_name: High Grow 1
+
+esphome:
+  name: $device_name
+  platform: ESP32
+  board: esp32dev
+  build_path: ./build/${device_name}
+ 
+#wifi:
+#  use_address: 10.25.30.105
+
+packages:
+  #Wifi Settings
+  wifi: !include includes/network.yaml
+
+#deep_sleep:
+#  run_duration: 10s
+#  sleep_duration: 15min
+
+sensor:
+  - platform: dht
+    pin: 22
+    model: DHt11
+    temperature:
+      name: "$friendly_name Temperature"
+    humidity:
+      name: "$friendly_name Humidity"
+  - platform: adc
+    pin: 32
+    name: "$friendly_name Soil Moisture"
+    attenuation: 11db
+    unit_of_measurement: '%'
+    filters:
+      # 1.1v = in water
+      # 2.94v = dry
+      lambda: |-
+        return (2.95 - x) * 100.0 / (2.95 - 1.1);

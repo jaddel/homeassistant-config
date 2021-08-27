@@ -1,0 +1,51 @@
+# Basic Config
+esphome:
+  name: "${device_name}"
+  platform: ESP8266
+  board: esp01_1m
+  build_path: ./build/${device_name}
+
+output:
+  - platform: esp8266_pwm
+    id: output_red
+    pin: GPIO4
+    #min_power: 0.01
+    #max_power: 0.75
+  - platform: esp8266_pwm
+    id: output_green
+    pin: GPIO12
+    #min_power: 0.01
+    #max_power: 0.75
+  - platform: esp8266_pwm
+    id: output_blue
+    pin: GPIO14
+    #min_power: 0.01
+    #max_power: 0.75
+  - platform: esp8266_pwm
+    id: output_cw
+    pin: GPIO5
+    #min_power: 0.01
+    #max_power: 0.0
+  - platform: esp8266_pwm
+    id: output_ww
+    pin: GPIO13
+    #min_power: 0.0003
+    #max_power: 0.75
+
+
+light:
+  - platform: rgbww
+    name: "${friendly_name}"
+    red: output_red
+    green: output_green
+    blue: output_blue
+    cold_white: output_cw
+    warm_white: output_ww
+    cold_white_color_temperature: 6500 K
+    warm_white_color_temperature: 2700 K
+    color_interlock: true
+    constant_brightness: true
+    default_transition_length: 0s
+    gamma_correct: 0
+    
+    

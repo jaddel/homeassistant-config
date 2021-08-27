@@ -1,0 +1,33 @@
+output:
+  - platform: esp8266_pwm
+    id: output_red
+    pin: GPIO4
+  - platform: esp8266_pwm
+    id: output_green
+    pin: GPIO12
+  - platform: esp8266_pwm
+    id: output_blue
+    pin: GPIO14
+  - platform: esp8266_pwm
+    id: output_warm_white
+    pin: GPIO13
+  - platform: esp8266_pwm
+    id: output_cold_white
+    pin: GPIO5
+
+# Define a light entity
+light:
+  - platform: rgbww
+    name: "${friendly_name}"
+    id: "${device_name}"
+    red: output_red
+    green: output_green
+    blue: output_blue
+    warm_white: output_warm_white
+    cold_white: output_cold_white
+    cold_white_color_temperature: 6500 K
+    warm_white_color_temperature: 2500 K
+    color_interlock: true # avoids simultaneous RGB and W/W
+    restore_mode: RESTORE_DEFAULT_ON
+    default_transition_length: 0 ms 
+    

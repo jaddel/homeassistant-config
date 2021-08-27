@@ -1,0 +1,66 @@
+#Variables
+substitutions:
+  device_name: bathroom_floor_heating
+  friendly_name: Bathroom Floor Heating
+
+wifi:
+  use_address: 10.25.30.132
+  
+packages:
+  api: !include includes/common_includes/core/core_api.yaml
+  logger: !include includes/common_includes/core/core_logger.yaml
+  ota: !include includes/common_includes/core/core_ota.yaml
+  web_server: !include includes/common_includes/core/core_web_server.yaml
+  wifi: !include includes/common_includes/core/core_wifi.yaml
+  time: !include includes/common_includes/time_sensor.yaml
+    
+
+# Basic Config
+esphome:
+  name: "$device_name"
+  platform: ESP8266
+  board: esp01_1m
+  build_path: ./build/$device_name
+
+logger:
+  baud_rate: 0
+
+uart:
+  rx_pin: GPIO3
+  tx_pin: GPIO1
+  baud_rate: 9600
+
+# Register the Tuya MCU connection
+tuya:
+  time_id: homeassistant_time
+
+climate:
+  - platform: tuya
+    name: $friendly_name
+    switch_datapoint: 1
+    target_temperature_datapoint: 2
+    current_temperature_datapoint: 3
+    current_temperature_multiplier: 0.5
+    target_temperature_multiplier: 0.5
+
+#    - platform: "tuya"
+#    name: "$friendly_name Floor Sensor"
+
+switch:
+#  - platform: "tuya"
+#    name: "$friendly_name Power"
+#    switch_datapoint: 1
+  - platform: "tuya"
+    name: "$friendly_name Lock"
+    switch_datapoint: 6
+  - platform: "tuya"
+    name: "$friendly_name ECO"
+    switch_datapoint: 5
+  - platform: "tuya"
+    name: "Data104"
+    switch_datapoint: 104
+  - platform: "tuya"
+    name: "Data4"
+    switch_datapoint: 4
+
+    

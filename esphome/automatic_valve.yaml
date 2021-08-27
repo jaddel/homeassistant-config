@@ -1,0 +1,305 @@
+#Variables
+substitutions:
+  device_name: automatic_valve
+  friendly_name: Automatic Valve
+
+esphome:
+  name: "${device_name}"
+  platform: ESP32
+  build_path: ./build/${device_name}
+  board: wemos_d1_mini32
+  on_loop:
+    then:
+      - if:
+          condition:
+            binary_sensor.is_on: limit_solar
+          then:
+            if:
+              condition:
+                switch.is_on: relay_solar
+              then:
+                - switch.turn_off: relay_solar
+                - logger.log: "Attention: The limit switch solar is on!"
+
+      - if:
+          condition:
+            binary_sensor.is_on: limit_boiler
+          then:
+            if:
+              condition:
+                switch.is_on: relay_boiler
+              then:
+                - switch.turn_off: relay_boiler
+                - logger.log: "Attention: The limit switch boiler is on!"
+
+globals:
+  - id: set_delta_t
+    type: int
+    restore_value: yes
+    initial_value: "5"
+
+#Wifi Settings
+wifi:
+  ssid: "FRITZ!Box 7580"
+  password: "34151437527999185202"
+
+#Captive Portal when ap is on
+captive_portal:
+
+#Web Server for manual access
+web_server:
+
+#Log to ESPHome
+logger:
+  #Disable logging to serial
+  baud_rate: 0
+
+#ESPHome OTA
+ota:
+
+# https://esphome.io/components/time.html?highlight=sntp#time-has-time-condition
+# This will reboot the esp every morning at 4am.
+time:
+  - platform: sntp
+    id: sntp_time
+    on_time:
+      - seconds: 0
+        minutes: 0
+        hours: 4
+        then:
+          - switch.turn_on: restart_valve
+# Backup Automation if no time server present
+interval:
+  - interval: 24h
+    then:
+      if:
+        condition:
+          not:
+            time.has_time:
+        then:
+          - switch.turn_on: restart_valve
+
+# This script will turn the valve to the solar if the corresponding limit switch is off.
+script:
+  - id: script_solar
+    then:
+      - if:
+          condition:
+            binary_sensor.is_off: limit_solar
+          then:
+            - switch.turn_on: relay_solar
+          else:
+            - logger.log: "Attention: The limit switch solar is not off!"
+
+  # This script will turn the valve to the boiler if the corresponding limit switch is off.
+
+  - id: script_boiler
+    then:
+      - if:
+          condition:
+            binary_sensor.is_off: limit_boiler
+          then:
+            - switch.turn_on: relay_boiler
+          else:
+            - logger.log: "Attention: The limit switch boiler is not off!"
+
+switch:
+  - platform: gpio
+    pin:
+      number: GPIO32
+      inverted: true
+    #      mode: INPUT_PULLUP
+    name: "boiler"
+    id: relay_boiler
+    interlock: [relay_solar]
+    # Set internal to false for exposure to web interface.
+    internal: true
+  - platform: gpio
+    pin:
+      number: GPIO12
+      inverted: true
+    #      mode: INPUT_PULLUP
+    name: "solar"
+    id: relay_solar
+    interlock: [relay_boiler]
+    internal: true
+
+  - platform: restart
+    name: "Valve Restart"
+    id: restart_valve
+
+  - platform: template
+    name: "Turn solar"
+    lambda: |-
+      if (id(relay_solar).state) {
+        return true;
+      } else {
+        return false;
+      }
+    turn_on_action:
+      - script.execute: script_solar
+    turn_off_action:
+      - switch.turn_off: relay_solar
+
+  - platform: template
+    name: "Turn boiler"
+    lambda: |-
+      if (id(relay_boiler).state) {
+        return true;
+      } else {
+        return false;
+      }
+    turn_on_action:
+      - script.execute: script_boiler
+    turn_off_action:
+      - switch.turn_off: relay_boiler
+
+  - platform: template
+    name: "Set Delta T +1"
+    turn_on_action:
+      then:
+        - lambda: |-
+            id(set_delta_t) += 1;
+
+  - platform: template
+    name: "Set Delta T -1"
+    turn_on_action:
+      then:
+        - lambda: |-
+            id(set_delta_t) -= 1;
+
+# The temperature sensor pin.
+dallas:
+  - pin:
+      number: GPIO26
+      # To set the mode might be optional I'm not sure. Use a # to comment out.
+      mode: INPUT
+
+sensor:
+  - platform: dallas
+    address: 0x4A01204CEB243928
+    name: "Solar Temp" #long
+    id: solar_temp
+    unit_of_measurement: "C"
+  - platform: dallas
+    address: 0x39011937282BCB28
+    name: "Boiler Temp"
+    id: boiler_temp
+    unit_of_measurement: "C"
+
+  # This template sensor calculates the temperature difference
+  # between solar and boiler every 3 seconds.
+  - platform: template
+    name: "delta T"
+    lambda: |-
+      return id(solar_temp).state - id(boiler_temp).state;
+    update_interval: 3s
+    id: delta_temp
+    unit_of_measurement: "C"
+    # This automation controlls the valve state based on the temperature difference.
+    # https://esphome.io/guides/automations.html#bonus-templating-actions
+    # The correct direction still needs to be adjusted.
+    on_value:
+      then:
+        - if:
+            condition:
+              lambda: |-
+                return id(delta_temp).state >= id(set_delta_t);
+            then:
+              script.execute: script_solar
+        - if:
+            condition:
+              lambda: |-
+                return id(delta_temp).state < id(set_delta_t);
+            then:
+              script.execute: script_boiler
+
+  # Webinterface Sensor Set delta T
+  - platform: template
+    name: "Set delta T"
+    lambda: |-
+      return id(set_delta_t);
+    update_interval: 3s
+    unit_of_measurement: "C"
+    id: set_delta_t_web
+
+binary_sensor:
+  # The binary sensors (buttons) to adjust the temperature range.
+  - platform: gpio
+    pin:
+      number: GPIO33
+      mode: INPUT_PULLUP
+      inverted: true
+    id: button_up
+    on_press:
+      then:
+        - lambda: |-
+            id(set_delta_t) += 1;
+
+  - platform: gpio
+    pin:
+      number: GPIO14
+      mode: INPUT_PULLUP
+      inverted: true
+    id: button_down
+    on_press:
+      then:
+        - lambda: |-
+            id(set_delta_t) -= 1;
+
+  # Limit Switches
+  - platform: gpio
+    id: limit_solar
+    name: Limit solar
+    pin:
+      number: GPIO17
+      inverted: false
+      mode: INPUT_PULLUP
+    # Automation to ensure that all relays turn off (in case of wrong wiring).
+    on_press:
+      then:
+        - switch.turn_off: relay_solar
+        - switch.turn_off: relay_boiler
+
+  - platform: gpio
+    id: limit_boiler
+    name: Limit boiler
+    pin:
+      number: GPIO16
+      inverted: true
+      mode: INPUT_PULLUP
+    # Automation to ensure that all relays turn off (in case of wrong wiring).
+    on_press:
+      then:
+        - switch.turn_off: relay_boiler
+        - switch.turn_off: relay_solar
+
+# The i^2c bus, used for the display.
+i2c:
+  sda: GPIO21
+  scl: GPIO22
+  scan: true
+
+# The font type file, must be contained by the esphome root directory.
+font:
+  - file: "Sansation_Regular.ttf"
+    id: my_font
+    size: 12
+
+# https://esphome.io/components/display/index.html?highlight=display
+# Display parameters
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x32"
+    address: 0x3C
+    lambda: |-
+      if (id(limit_solar).state) {
+        it.filled_rectangle(0, 2, 3, 14);
+      }
+      if (id(limit_boiler).state) {
+        it.filled_rectangle(0, 18, 3, 30);
+      }
+      it.printf(5, 2, id(my_font), "S: %.1f°C", id(solar_temp).state);
+      it.printf(5, 18, id(my_font), "B: %.1f°C", id(boiler_temp).state);
+      it.printf(60, 2, id(my_font), "D: %.1f°C", id(delta_temp).state);
+      it.printf(60, 18, id(my_font), "S: %d°C", id(set_delta_t));

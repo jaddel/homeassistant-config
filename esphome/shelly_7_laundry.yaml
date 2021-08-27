@@ -1,0 +1,53 @@
+#Variables
+substitutions:
+  device_name: shelly_7_laundry
+  friendly_name: Laundry
+
+# Basic Config
+esphome:
+  name: "${device_name}"
+  platform: ESP8266
+  board: esp01_1m
+  build_path: ./build/${device_name}
+
+wifi:
+  use_address: 10.25.30.108
+
+packages:
+  #Wifi Settings
+  wifi: !include includes/network.yaml
+
+# Device Specific Config
+
+output:
+  - platform: gpio
+    pin: GPIO4
+    id: relayid
+
+
+light:
+  - platform: binary
+    name: "${friendly_name}"
+    output: relayid
+    id: lightid
+    on_turn_on:
+      then:
+        - delay: 180s
+        - light.turn_off: lightid
+
+
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO5
+    name: "${friendly_name}"
+    on_state:
+      then:
+        - light.toggle: lightid
+    internal: true
+    id: sensorid
+
+  - platform: template
+    name: "Auto OFF"
+    id: auto_off

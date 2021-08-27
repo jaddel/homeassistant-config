@@ -1,0 +1,5 @@
+# Binary Sensor to indicate if HA api is connected 
+
+binary_sensor:
+  - platform: status
+    name: "Living Room Status"

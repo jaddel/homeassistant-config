@@ -1,0 +1,41 @@
+#Variables
+substitutions:
+  device_name: light_1_lsc_e14_max_bed
+  friendly_name: Bedroom Max Bedside
+
+# Basic Config
+esphome:
+  name: "${device_name}"
+  platform: ESP8266
+  board: esp01_1m
+  build_path: ./build/${device_name}
+
+#wifi:
+#  use_address: 10.25.30.108
+
+packages:
+  #Wifi Settings
+  wifi: !include includes/network.yaml
+  
+output:
+  - platform: esp8266_pwm
+    id: output_warm_white
+    pin: GPIO14
+  - platform: esp8266_pwm
+    id: output_cold_white
+    pin: GPIO12
+
+# Define a light entity
+light:
+  - platform: cwww
+    name: "${friendly_name}"
+    id: "${device_name}"
+    warm_white: output_warm_white
+    cold_white: output_cold_white
+    cold_white_color_temperature: 1500 K
+    warm_white_color_temperature: 5000 K
+    restore_mode: RESTORE_DEFAULT_OFF
+    default_transition_length: 0 ms 
+    constant_brightness: true
+
+    

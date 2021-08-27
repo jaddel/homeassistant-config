@@ -1,0 +1,57 @@
+#Variables
+substitutions:
+  device_name: esp32cam_01
+  friendly_name: ESP Camera 1
+  
+# Basic Config
+esphome:
+  name: "${device_name}"
+  platform: ESP32
+  board: nodemcu-32s
+  build_path: ./build/${device_name}
+  
+#wifi:
+#  use_address: 10.25.30.197
+
+packages:
+  #Wifi Settings
+  wifi: !include includes/network.yaml
+
+
+esp32_camera:
+  name: $friendly_name
+  external_clock:
+    pin: GPIO0
+    frequency: 20MHz
+  i2c_pins:
+    sda: GPIO26
+    scl: GPIO27
+  data_pins: [GPIO5, GPIO18, GPIO19, GPIO21, GPIO36, GPIO39, GPIO34, GPIO35]
+  vsync_pin: GPIO25
+  href_pin: GPIO23
+  pixel_clock_pin: GPIO22
+  power_down_pin: GPIO32
+
+output:
+  - platform: ledc
+    pin: GPIO4
+    id: gpio_4
+    channel: 7
+    frequency: 9765Hz
+
+light:
+  - platform: monochromatic
+    output: gpio_4
+    name: $friendly_name light 
+
+switch:
+  - platform: restart
+    name: $friendly_name restart 
+
+sensor:
+  - platform: wifi_signal
+    name: $friendly_name wifi signal
+    update_interval: 600s
+
+  - platform: uptime
+    name: $friendly_name uptime 

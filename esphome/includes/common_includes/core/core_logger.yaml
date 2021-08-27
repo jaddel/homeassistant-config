@@ -1,0 +1,5 @@
+# Logger
+
+logger:
+  #Disable logging to serial
+  #baud_rate: 0  

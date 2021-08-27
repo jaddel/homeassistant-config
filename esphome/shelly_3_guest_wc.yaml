@@ -1,0 +1,35 @@
+#Variables
+substitutions:
+  device_name: shelly_3_guest_wc
+  friendly_name: Guest WC Shelly
+  remote_name: Guest WC Remote
+  fan_name: Guest WC Fan
+
+# Basic Config
+esphome:
+  name: "${device_name}"
+  platform: ESP8266
+  board: esp01_1m
+  build_path: ./build/${device_name}
+
+wifi:
+  use_address: 10.25.30.101
+
+packages:
+  #Wifi Settings
+  wifi: !include includes/network.yaml
+
+#Device Specific Config
+
+switch:
+  - platform: gpio
+    pin: GPIO4
+    name: "${fan_name}"
+    restore_mode: ALWAYS_OFF
+    internal: true
+    
+binary_sensor:                         
+  - platform: gpio                     
+    pin: GPIO5                              
+    name: "${remote_name}"
+    

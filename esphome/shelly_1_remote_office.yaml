@@ -1,0 +1,32 @@
+#Variables
+substitutions:
+  device_name: shelly_1_remote_office
+  friendly_name: Office Shelly Remote
+  
+# Basic Config
+esphome:
+  name: "${device_name}"
+  platform: ESP8266
+  board: esp01_1m
+  build_path: ./build/${device_name}
+  
+wifi:
+  use_address: 10.25.30.105
+
+packages:
+  #Wifi Settings
+  wifi: !include includes/network.yaml
+
+#Device Specific Config
+
+switch:
+  - platform: gpio
+    pin: GPIO4
+    name: "${friendly_name}"
+    restore_mode: ALWAYS_OFF
+    internal: true
+
+binary_sensor:                         
+  - platform: gpio                     
+    pin: GPIO5                              
+    name: "${friendly_name}"

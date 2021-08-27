@@ -1,0 +1,111 @@
+#Variables
+substitutions:
+  device_name: socket-1kitchen-cooking
+  friendly_name: Kitchen Cooking
+  sliding_window_moving_average_window_size: "10"   
+  sliding_window_moving_average_send_every: "5"
+#  median_window_size: "5" 
+#  median_send_every: "1"
+  
+# Basic Config
+esphome:
+  name: "${device_name}"
+  platform: ESP8266
+  board: esp8285
+  build_path: ./build/${device_name}
+
+wifi:
+  use_address: 10.25.30.134
+  
+packages:
+  #Wifi Settings
+  wifi: !include includes/network.yaml
+
+
+# Device Specific Config
+#time:
+#  - platform: homeassistant
+#    id: homeassistant_time
+
+output:
+  - platform: gpio
+    pin: GPIO15
+    id: relay
+  - platform: gpio
+    pin: GPIO2
+    id: led_blue
+    inverted: true
+  - platform: gpio
+    pin: GPIO00
+    id: led_red
+    inverted: true
+    
+switch:
+  - platform: gpio
+    pin: 15
+    name: "${friendly_name}"
+    restore_mode: RESTORE_DEFAULT_ON
+
+light:
+  - platform: binary
+    output: relay
+    name: "${friendly_name}"
+  - platform: binary
+    name: "${friendly_name} Led Blue"
+    output: led_blue
+    restore_mode: ALWAYS_OFF
+    internal: true
+  - platform: binary
+    name: "${friendly_name} Led Red"
+    output: led_red
+    internal: true
+    restore_mode: ALWAYS_OFF
+
+sensor:
+  - platform: hlw8012
+    update_interval: 3s
+    change_mode_every: 3
+    sel_pin:
+      number: GPIO12
+      inverted: True
+    cf_pin: GPIO05
+    cf1_pin: GPIO04
+    power:
+      name: "${friendly_name} Power"
+      unit_of_measurement: W
+      id: "power_wattage"
+      accuracy_decimals: 1
+      filters:
+        - sliding_window_moving_average:
+            window_size: $sliding_window_moving_average_window_size
+            send_every: $sliding_window_moving_average_send_every
+        - calibrate_linear:
+            - 0 -> 0.6
+            - 38.892 -> 6.0
+            - 66.2 -> 9.6
+            - 59.579 -> 8.8
+            - 3882.165 -> 512.0
+            - 7605.047 -> 1003
+            - 12075 -> 1580
+    current:
+      name: "${friendly_name} Current"
+      internal: True
+      unit_of_measurement: A
+      accuracy_decimals: 1
+      filters:
+        - sliding_window_moving_average:
+            window_size: $sliding_window_moving_average_window_size
+            send_every: $sliding_window_moving_average_send_every
+    voltage:
+      name: "${friendly_name} Voltage"
+      internal: True
+      unit_of_measurement: V
+      accuracy_decimals: 1
+      filters:
+        - sliding_window_moving_average:
+            window_size: $sliding_window_moving_average_window_size
+            send_every: $sliding_window_moving_average_send_every
+        - calibrate_linear:
+            - 0.0 -> 0.0
+            - 756.512 -> 238.0
+

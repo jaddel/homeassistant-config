@@ -1,0 +1,38 @@
+#Wifi
+wifi:
+  networks:
+  - ssid: !secret wifi_not_ssid
+    password: !secret wifi_not_password
+  # If wifi can not connect reboot with in xx hours  
+  reboot_timeout: 24h
+  fast_connect: true
+
+  #Access Point
+  ap:
+    ssid: "${device_name}"
+    password: !secret wifi_ap_password
+
+#Captive Portal when ap is on
+captive_portal:
+
+#Web Server for manual access 
+web_server:
+
+#Log to ESPHome
+logger:
+  #Disable logging to serial
+  baud_rate: 0  
+
+#Homeassitant API
+api:
+  reboot_timeout: 24h
+
+#ESPHome OTA
+ota:
+
+time:
+  - platform: sntp
+    id: sntp_time
+    servers: 
+      - 10.25.10.2
+    

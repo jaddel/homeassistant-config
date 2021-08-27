@@ -1,0 +1,29 @@
+{
+  "name": "Bedroom Roomba",
+  "unique_id": "Bedroom Roomba",
+  "schema": "state",
+  "supported_features": [
+    "start",
+    "pause",
+    "stop",
+    "return_home",
+    "battery",
+    "status",
+    "locate",
+    "clean_spot",
+    "fan_speed",
+    "send_command"
+  ],
+  "command_topic": "valetudo/Bedroom Roomba/command",
+  "state_topic": "valetudo/Bedroom Roomba/state",
+  "set_fan_speed_topic": "valetudo/Bedroom Roomba/set_fan_speed",
+  "fan_speed_list": [
+    "min",
+    "medium",
+    "high",
+    "max",
+    "mop"
+  ],
+  "send_command_topic": "valetudo/Bedroom Roomba/custom_command",
+  "json_attributes_topic": "valetudo/Bedroom Roomba/attributes"
+}

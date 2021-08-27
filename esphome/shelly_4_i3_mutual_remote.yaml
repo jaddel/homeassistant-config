@@ -1,0 +1,51 @@
+substitutions:
+  device_name: shelly_4_i3_mutual_remote
+  friendly_name: Mutual Shellyi3 Remote 
+  
+# Basic Config
+esphome:
+  name: "${device_name}"
+  platform: ESP8266
+  board: esp01_1m
+  build_path: ./build/${device_name}
+
+wifi:
+  use_address: 10.25.30.106
+  
+packages:
+  #Wifi Settings
+  wifi: !include includes/network.yaml
+
+binary_sensor:
+
+#Hall Light
+  - platform: gpio
+    pin:
+      number: GPIO14
+      mode: INPUT
+    name: Top $friendly_name
+    id: sensorid1
+    filters:
+      - delayed_on_off: 80ms
+      
+#Kitchen Light
+  - platform: gpio
+    pin:
+      number: GPIO12
+      mode: INPUT
+    name: Mid $friendly_name
+    id: sensorid2
+    filters:
+      - delayed_on_off: 80ms
+
+#Living Room Light          
+  - platform: gpio
+    pin:
+      number: GPIO13
+      mode: INPUT
+      
+    name: Bottom $friendly_name
+    id: sensorid3
+    filters:
+      - delayed_on_off: 80ms
+

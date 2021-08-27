@@ -1,0 +1,5 @@
+# Restart Switch
+
+switch:
+  - platform: restart
+    name: "$device_name"
