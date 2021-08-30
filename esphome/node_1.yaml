@@ -1,8 +1,15 @@
-#Variables
+# Office Wall Swich
+
+# Variables
 substitutions:
-  device_name: shelly_1_remote_office
-  friendly_name: Office Shelly Remote
-  
+  device_name: !secret node_1_device_name
+  friendly_name: !secret node_1_friendly_name
+  hardware_id: !secret node_1_hardware_id
+  static_ip: !secret node_1_static_ip
+  gateway: !secret node_1_gateway
+  subnet: !secret node_1_subnet
+  use_address: !secret node_1_use_address
+
 # Basic Config
 esphome:
   name: "${device_name}"
@@ -11,7 +18,11 @@ esphome:
   build_path: ./build/${device_name}
   
 wifi:
-  use_address: 10.25.30.105
+  use_address: $use_address
+  manual_ip:
+    static_ip: $static_ip
+    gateway: $gateway
+    subnet: $subnet
 
 packages:
   #Wifi Settings
