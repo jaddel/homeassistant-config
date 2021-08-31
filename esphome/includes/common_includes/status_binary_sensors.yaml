@@ -2,4 +2,4 @@
 
 binary_sensor:
   - platform: status
-    name: "Living Room Status"
+    name: $friendly_name

@@ -22,19 +22,14 @@
     entities:
       - light.lifx_office_screen
       - light.lifx_office_wardrobe
-      - light.office_yeelight_ceiling
-      - light.office_yeelight_ceiling_nightlight
-      - light.lifx_screen_one
-      #- light.lifx_screen_two
-      - light.lifx_screen_three
+      - light.office_ceiling
+      - light.office_ceiling_nightlight
+
   - platform: group
     name: LG Office Ambient
     entities:
       - light.lifx_office_wardrobe
       - light.lifx_office_screen
-      - light.lifx_screen_one
-      #- light.lifx_screen_two
-      - light.lifx_screen_three
 
   - platform: group
     name: LG Main

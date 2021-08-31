@@ -151,18 +151,18 @@
       entity_id: light.lifx_bathroom_ceiling
   mode: restart
 - id: '1615494969540'
-  alias: Office Light Wall Switch Remote
+  alias: Office Wall Switch Single Click
   description: ''
   trigger:
   - type: turned_on
     platform: device
     device_id: 7a1ecd0b2ffa25b732efd86b6da0d511
-    entity_id: binary_sensor.office_shelly_remote
+    entity_id: binary_sensor.office_wall_switch_1
     domain: binary_sensor
   - type: turned_off
     platform: device
     device_id: 7a1ecd0b2ffa25b732efd86b6da0d511
-    entity_id: binary_sensor.office_shelly_remote
+    entity_id: binary_sensor.office_wall_switch_1
     domain: binary_sensor
   condition: []
   action:
@@ -177,7 +177,6 @@
           entity_id: light.lg_internal_office_all
     default:
     - service: light.turn_on
-      data: {}
       target:
         entity_id: light.lg_office_ambient
   mode: restart
@@ -697,3 +696,70 @@
       - service: notify.awsome_people
         data:
           message: 'The Dishwasher Machine has finished! '
+- id: '1630340723416'
+  alias: Office Wall Switch Double Click
+  description: ''
+  trigger:
+  - type: turned_on
+    platform: device
+    device_id: 7a1ecd0b2ffa25b732efd86b6da0d511
+    entity_id: binary_sensor.office_wall_switch_2
+    domain: binary_sensor
+  - type: turned_off
+    platform: device
+    device_id: 7a1ecd0b2ffa25b732efd86b6da0d511
+    entity_id: binary_sensor.office_wall_switch_2
+    domain: binary_sensor
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        state: 'on'
+        entity_id: light.office_ceiling
+      sequence:
+      - service: light.turn_off
+        target:
+          entity_id: light.lg_internal_office_all
+    default:
+    - service: light.turn_on
+      target:
+        entity_id: light.office_ceiling
+  mode: restart
+- id: '1630341072974'
+  alias: Office Wall Switch Long Click
+  description: ''
+  trigger:
+  - type: turned_on
+    platform: device
+    device_id: 7a1ecd0b2ffa25b732efd86b6da0d511
+    entity_id: binary_sensor.office_wall_switch_3
+    domain: binary_sensor
+  - type: turned_off
+    platform: device
+    device_id: 7a1ecd0b2ffa25b732efd86b6da0d511
+    entity_id: binary_sensor.office_wall_switch_3
+    domain: binary_sensor
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: device
+        device_id: 58d26aa7243d28eb010dbd21f414b5b6
+        domain: cover
+        entity_id: cover.office_shade
+        type: is_position
+        below: 70
+      sequence:
+      - device_id: 58d26aa7243d28eb010dbd21f414b5b6
+        domain: cover
+        entity_id: cover.office_shade
+        type: set_position
+        position: 100
+    default:
+    - device_id: 58d26aa7243d28eb010dbd21f414b5b6
+      domain: cover
+      entity_id: cover.office_shade
+      type: set_position
+      position: 19
+  mode: restart
