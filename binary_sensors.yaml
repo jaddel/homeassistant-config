@@ -16,7 +16,9 @@
   sensors:
     kitchen_someone_is_cooking:
       friendly_name: "Someone is cooking"
-      value_template: "{{ states('sensor.kitchen_cooking_power')|float > 80 }}"
+      value_template: >-
+        {{ (states('sensor.kitchen_cooking_power')|float > 80) or 
+        (states('sensor.kitchen_cooking_lumi_humidity')|float > 70) }}
 
 
 ## The Projector is ON/OFF

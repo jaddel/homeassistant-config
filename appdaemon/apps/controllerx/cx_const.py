@@ -12,6 +12,8 @@ CustomAction = Union[str, Dict[str, Any]]
 CustomActions = Union[List[CustomAction], CustomAction]
 CustomActionsMapping = Dict[ActionEvent, CustomActions]
 
+Number = Union[int, float]
+
 
 class Light:
     ON = "on"
@@ -34,6 +36,7 @@ class Light:
     SET_HALF_WHITE_VALUE = "set_half_white_value"
     SET_HALF_COLOR_TEMP = "set_half_color_temp"
     SYNC = "sync"
+    CLICK = "click"
     CLICK_BRIGHTNESS_UP = "click_brightness_up"
     CLICK_BRIGHTNESS_DOWN = "click_brightness_down"
     CLICK_WHITE_VALUE_UP = "click_white_value_up"
@@ -44,6 +47,7 @@ class Light:
     CLICK_COLOR_TEMP_DOWN = "click_colortemp_down"
     CLICK_XY_COLOR_UP = "click_xycolor_up"
     CLICK_XY_COLOR_DOWN = "click_xycolor_down"
+    HOLD = "hold"
     HOLD_BRIGHTNESS_UP = "hold_brightness_up"
     HOLD_BRIGHTNESS_DOWN = "hold_brightness_down"
     HOLD_BRIGHTNESS_TOGGLE = "hold_brightness_toggle"
@@ -61,6 +65,7 @@ class Light:
     HOLD_XY_COLOR_TOGGLE = "hold_xycolor_toggle"
     XYCOLOR_FROM_CONTROLLER = "xycolor_from_controller"
     COLORTEMP_FROM_CONTROLLER = "colortemp_from_controller"
+    BRIGHTNESS_FROM_CONTROLLER = "brightness_from_controller"
 
 
 class MediaPlayer:
@@ -68,6 +73,7 @@ class MediaPlayer:
     HOLD_VOLUME_UP = "hold_volume_up"
     CLICK_VOLUME_DOWN = "click_volume_down"
     CLICK_VOLUME_UP = "click_volume_up"
+    VOLUME_SET = "volume_set"
     RELEASE = "release"
     PLAY = "play"
     PAUSE = "pause"
@@ -77,6 +83,7 @@ class MediaPlayer:
     NEXT_SOURCE = "next_source"
     PREVIOUS_SOURCE = "previous_source"
     MUTE = "mute"
+    TTS = "tts"
 
 
 class Switch:
@@ -91,3 +98,15 @@ class Cover:
     STOP = "stop"
     TOGGLE_OPEN = "toggle_open"
     TOGGLE_CLOSE = "toggle_close"
+
+
+class StepperDir:
+    UP = "up"
+    DOWN = "down"
+    TOGGLE = "toggle"
+
+
+class StepperMode:
+    STOP = "stop"
+    LOOP = "loop"
+    BOUNCE = "bounce"

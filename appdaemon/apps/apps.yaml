@@ -142,12 +142,32 @@ bedroom_freya_bedside_light:
   integration: zha
   light: light.lifx_bedroom_bed
 
-bedroom_wall_switch_remote:
+bedroom_wall_switch_1:
   module: controllerx
   class: LightController
   integration: state
-  controller: binary_sensor.bedroom_shelly_remote
+  controller: binary_sensor.bedroom_wall_switch_1
   light: light.bedroom_ambient
+  mapping:
+    "on": "toggle"
+    "off": "toggle"
+
+bedroom_wall_switch_2:
+  module: controllerx
+  class: LightController
+  integration: state
+  controller: binary_sensor.bedroom_wall_switch_2
+  light: light.bedroom_ceiling
+  mapping:
+    "on": "toggle"
+    "off": "toggle"
+    
+bedroom_wall_switch_3:
+  module: controllerx
+  class: LightController
+  integration: state
+  controller: binary_sensor.bedroom_wall_switch_3
+  light: light.bedroom_ceiling_nightlight
   mapping:
     "on": "toggle"
     "off": "toggle"

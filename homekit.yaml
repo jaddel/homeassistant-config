@@ -88,6 +88,7 @@
       # Light
       - light.lifx_living_room_sofa
       - light.lifx_living_room_table
+      - light.ikea_bulb 
       # Covers
       - cover.living_room_shade_l
       - cover.living_room_shade_r
@@ -95,8 +96,9 @@
       - vacuum.living_room_roomba
       # Script
       - script.living_room_privacy
+
   entity_config:
-    # Light
+    # Light∏
     light.lifx_living_room_sofa:
       name: Living Room Sofa
     light.lifx_living_room_table:
@@ -121,6 +123,8 @@
       # Light
       - light.lifx_hall_one
       - light.lifx_hall_two
+      # Automation
+      - automation.motion_hall
 
   entity_config:
     # Light
@@ -128,7 +132,10 @@
       name: Hall One
     light.lifx_hall_two:
       name: Hall Two
-
+    # Hall
+    automation.motion_hall:
+      name: Hall Motion Light
+      
 ### Bahtroom
 - name: bathroom_hkb
   port: 21067
@@ -160,6 +167,8 @@
       - light.lifx_kitchen_ceiling
       # Fan
       - fan.kitchen_exhaust_fan
+      # Automation
+      - automation.kitchen_spot_motion_activated_light
   entity_config:
     # Light
     light.kitchen_spot:
@@ -171,6 +180,10 @@
     # Fan
     fan.kitchen_exhaust_fan:
       name: Kitchen Exhaust
+    # Automation
+    automation.kitchen_spot_motion_activated_light:
+      name: Kitchen Montion Light
+
 
 ### ZzSetupzZ
 - name: zzSetupzz_hkb
@@ -180,10 +193,13 @@
       # Scripts
       - script.home_assistent_restart_appdameon
       - script.home_assistent_restart_core
+      - input_boolean.sleep_mode
   entity_config:
     # Scripts
     script.home_assistent_restart_appdameon:
       name: Restart HA Appdaemon
     script.home_assistent_restart_core:
       name: Restart HA Core
+    input_boolean.sleep_mode:
+      name: Sleep Mode
 

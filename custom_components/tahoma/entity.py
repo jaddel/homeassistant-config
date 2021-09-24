@@ -2,29 +2,26 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-import logging
 from typing import Any, Callable
 
 from homeassistant.components.binary_sensor import BinarySensorEntityDescription
 from homeassistant.components.sensor import SensorEntityDescription
 from homeassistant.const import ATTR_BATTERY_LEVEL
-from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from pyhoma.models import Device
 
 from .const import DOMAIN
-from .coordinator import TahomaDataUpdateCoordinator
+from .coordinator import OverkizDataUpdateCoordinator
 from .executor import OverkizExecutor
-
-ATTR_RSSI_LEVEL = "rssi_level"
 
 CORE_AVAILABILITY_STATE = "core:AvailabilityState"
 CORE_BATTERY_STATE = "core:BatteryState"
+CORE_FIRMWARE_REVISION = "core:FirmwareRevision"
 CORE_MANUFACTURER = "core:Manufacturer"
 CORE_MANUFACTURER_NAME_STATE = "core:ManufacturerNameState"
 CORE_MODEL_STATE = "core:ModelState"
 CORE_PRODUCT_MODEL_NAME_STATE = "core:ProductModelNameState"
-CORE_RSSI_LEVEL_STATE = "core:RSSILevelState"
 CORE_SENSOR_DEFECT_STATE = "core:SensorDefectState"
 CORE_STATUS_STATE = "core:StatusState"
 
@@ -44,43 +41,28 @@ BATTERY_MAP = {
     STATE_BATTERY_VERY_LOW: 10,
 }
 
-_LOGGER = logging.getLogger(__name__)
 
-
-class OverkizEntity(CoordinatorEntity, Entity):
+class OverkizEntity(CoordinatorEntity):
     """Representation of a Overkiz device entity."""
 
-    def __init__(self, device_url: str, coordinator: TahomaDataUpdateCoordinator):
+    coordinator: OverkizDataUpdateCoordinator
+
+    def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
         """Initialize the device."""
         super().__init__(coordinator)
         self.device_url = device_url
         self.base_device_url, *_ = self.device_url.split("#")
         self.executor = OverkizExecutor(device_url, coordinator)
 
+        self._attr_assumed_state = not self.device.states
+        self._attr_available = self.device.available
+        self._attr_name = self.device.label
+        self._attr_unique_id = self.device.deviceurl
+
     @property
     def device(self) -> Device:
         """Return Overkiz device linked to this entity."""
         return self.coordinator.data[self.device_url]
-
-    @property
-    def name(self) -> str:
-        """Return the name of the device."""
-        return self.device.label
-
-    @property
-    def available(self) -> bool:
-        """Return True if entity is available."""
-        return self.device.available
-
-    @property
-    def unique_id(self) -> str:
-        """Return a unique ID."""
-        return self.device.deviceurl
-
-    @property
-    def assumed_state(self) -> bool:
-        """Return True if unable to access real state of the entity."""
-        return not self.device.states
 
     @property
     def device_info(self) -> dict[str, Any]:
@@ -107,23 +89,20 @@ class OverkizEntity(CoordinatorEntity, Entity):
             or self.device.widget
         )
 
-        return {
-            "identifiers": {(DOMAIN, self.executor.base_device_url)},
-            "manufacturer": manufacturer,
-            "name": self.device.label,
-            "model": model,
-            "sw_version": self.device.controllable_name,
-            "suggested_area": self.coordinator.areas[self.device.placeoid],
-            "via_device": self.executor.get_gateway_id(),
-        }
+        return DeviceInfo(
+            identifiers={(DOMAIN, self.executor.base_device_url)},
+            name=self.device.label,
+            manufacturer=manufacturer,
+            model=model,
+            sw_version=self.executor.select_attribute(CORE_FIRMWARE_REVISION),
+            suggested_area=self.coordinator.areas[self.device.placeoid],
+            via_device=self.executor.get_gateway_id(),
+        )
 
     @property
-    def device_state_attributes(self) -> dict[str, Any]:
+    def extra_state_attributes(self) -> dict[str, Any]:
         """Return the state attributes of the device."""
         attr = {}
-
-        if self.executor.has_state(CORE_RSSI_LEVEL_STATE):
-            attr[ATTR_RSSI_LEVEL] = self.executor.select_state(CORE_RSSI_LEVEL_STATE)
 
         if self.executor.has_state(CORE_BATTERY_STATE):
             battery_state = self.executor.select_state(CORE_BATTERY_STATE)
@@ -132,15 +111,6 @@ class OverkizEntity(CoordinatorEntity, Entity):
         if self.executor.select_state(CORE_SENSOR_DEFECT_STATE) == STATE_DEAD:
             attr[ATTR_BATTERY_LEVEL] = 0
 
-        if self.device.attributes:
-            for attribute in self.device.attributes:
-                attr[attribute.name] = attribute.value
-
-        if self.device.states:
-            for state in self.device.states:
-                if "State" in state.name:
-                    attr[state.name] = state.value
-
         return attr
 
 
@@ -148,7 +118,9 @@ class OverkizEntity(CoordinatorEntity, Entity):
 class OverkizSensorDescription(SensorEntityDescription):
     """Class to describe an Overkiz sensor."""
 
-    value: Callable[[str | int | float], str | int | float] | None = lambda val: val
+    native_value: Callable[
+        [str | int | float], str | int | float
+    ] | None = lambda val: val
 
 
 @dataclass
@@ -164,19 +136,11 @@ class OverkizDescriptiveEntity(OverkizEntity):
     def __init__(
         self,
         device_url: str,
-        coordinator: TahomaDataUpdateCoordinator,
+        coordinator: OverkizDataUpdateCoordinator,
         description: OverkizSensorDescription | OverkizBinarySensorDescription,
     ):
         """Initialize the device."""
         super().__init__(device_url, coordinator)
         self.entity_description = description
-
-    @property
-    def name(self) -> str:
-        """Return the name of the device."""
-        return f"{super().name} {self.entity_description.name}"
-
-    @property
-    def unique_id(self) -> str:
-        """Return a unique ID."""
-        return f"{super().unique_id}-{self.entity_description.key}"
+        self._attr_name = f"{super().name} {self.entity_description.name}"
+        self._attr_unique_id = f"{super().unique_id}-{self.entity_description.key}"

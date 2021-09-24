@@ -102,3 +102,15 @@ living_room_privacy:
     data:
       position: 40
   mode: single
+clean_the_kitchen:
+  sequence:
+  - service: vacuum.send_command
+    data:
+      params:
+        zone_ids:
+        - kitchen
+      command: zoned_cleanup
+    target:
+      entity_id: vacuum.living_room_roomba
+  mode: single
+  alias: Clean the kitchen

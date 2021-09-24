@@ -1,0 +1,29 @@
+blueprint:
+  name: Binary Sensor Entity Controller
+  description: Control a light based on a binary sensor.
+  domain: automation
+  input:
+    binary_sensor:
+      name: Binary Sensor
+      description: This sensor will toggle the light.
+      selector:
+        entity:
+          domain: binary_sensor
+    target_light:
+      name: Lights
+      description: The lights to toggle.
+      selector:
+        target:
+          entity:
+            domain: light
+
+trigger:
+  - platform: state
+    entity_id: !input binary_sensor
+
+action:
+  - service: >
+      {% if trigger.to_state.state == "on" or "off" %}
+        light.toggle
+      {% endif %}
+    target: !input target_light

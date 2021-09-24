@@ -4,6 +4,7 @@
   trigger:
   - platform: state
     entity_id: binary_sensor.lumi_lumi_sensor_magnet_on_off
+    from: 'on'
   condition: []
   action:
   - service: notify.mobile_app_whiterabbit
@@ -553,8 +554,8 @@
           entity_id:
           - switch.adaptive_lighting_sleep_mode_bathroom
           - switch.adaptive_lighting_sleep_mode_guest_wc
-          - switch.adaptive_lighting_sleep_mode_main
           - switch.adaptive_lighting_sleep_mode_max_bedside
+          - switch.adaptive_lighting_sleep_mode_hall
     - conditions:
       - condition: state
         entity_id: input_boolean.sleep_mode
@@ -565,8 +566,8 @@
           entity_id:
           - switch.adaptive_lighting_sleep_mode_bathroom
           - switch.adaptive_lighting_sleep_mode_guest_wc
-          - switch.adaptive_lighting_sleep_mode_main
           - switch.adaptive_lighting_sleep_mode_max_bedside
+          - switch.adaptive_lighting_sleep_mode_hall
     default: []
   mode: single
 - id: '1626587597499'
@@ -749,7 +750,7 @@
         domain: cover
         entity_id: cover.office_shade
         type: is_position
-        below: 70
+        below: 30
       sequence:
       - device_id: 58d26aa7243d28eb010dbd21f414b5b6
         domain: cover
@@ -763,3 +764,41 @@
       type: set_position
       position: 19
   mode: restart
+- id: '1630584320741'
+  alias: Kitchen  Exhaust Humidity
+  description: ''
+  trigger:
+  - type: humidity
+    platform: device
+    device_id: 983a42d2a0a16c4968d3ac9f2e188e2d
+    entity_id: sensor.kitchen_cooking_lumi_humidity
+    domain: sensor
+    above: 80
+    id: 'on'
+  - type: humidity
+    platform: device
+    device_id: 983a42d2a0a16c4968d3ac9f2e188e2d
+    entity_id: sensor.kitchen_cooking_lumi_humidity
+    domain: sensor
+    above: 0
+    id: 'off'
+    below: 80
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: 'on'
+      sequence:
+      - device_id: c8bfb20bb8775a326709ff73c5a26558
+        domain: fan
+        entity_id: fan.kitchen_exhaust_fan
+        type: turn_on
+    default:
+    - condition: trigger
+      id: 'off'
+    - device_id: c8bfb20bb8775a326709ff73c5a26558
+      domain: fan
+      entity_id: fan.kitchen_exhaust_fan
+      type: turn_off
+  mode: single
