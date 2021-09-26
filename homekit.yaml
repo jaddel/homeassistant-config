@@ -15,7 +15,7 @@
       # Scripts
       - script.office_desk_main_fail_safe
       # Switche
-      - switch.hybernate_max_pc
+      - switch.hybernate
       - light.office_ceiling
 
   entity_config:
@@ -38,8 +38,8 @@
     script.office_desk_main_fail_safe:
       name: Office Computer
     # Switches
-    switch.hybernate_max_pc:
-      name: Office Hybernate my Computer
+    switch.hybernate:
+      name: Office Standby my Computer
 
 ### Bedroom
 - name: bedroom_hkb
@@ -54,7 +54,7 @@
       - light.bedroom_ambient
       # Covers
       - cover.bedroom_shade
-      # Scripts
+      
       - script.bedroom_privacy
       - light.bedroom_ceiling
       
