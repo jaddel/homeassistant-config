@@ -9,7 +9,7 @@
     entities:
       - light.lifx_screen_one
       - light.lifx_office_screen
-      - light.lifx_screen_three
+      - light.lifx_screen_three 
 
   - platform: group
     name: LG Office

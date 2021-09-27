@@ -23,3 +23,23 @@
     
   - platform: dwd_weather_warnings  
     region_name: 111000000 
+
+  - platform: systemmonitor
+    resources:
+    - type: processor_use
+    - type: disk_use_percent
+      arg: "/"
+    - type: disk_free
+      arg: "/"
+    - type: memory_use_percent
+    - type: network_in
+      arg: eth0
+    - type: throughput_network_in
+      arg: eth0
+    - type: network_out
+      arg: eth0
+    - type: throughput_network_out
+      arg: eth0
+    - type: processor_temperature
+    - type: last_boot
+

@@ -60,7 +60,13 @@ influxdb:
       - light.bedroom_ceiling
       - light.bedroom_ceiling_nightlight
 
-##Octoprint
+
+##Spotify
+spotify:
+  client_id: 3b6a83360e524564acaac5ccbc0fc187
+  client_secret: 4ab09ccc8bb54fb5b7816116ee7ae835      
+
+  ##Octoprint
 
 #octoprint:
 #  host: http://10.25.10.15
