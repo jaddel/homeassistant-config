@@ -1,35 +1,52 @@
-#Variables
+# bedroom_yeelight_ceiling
+
+# Variables
 substitutions:
-  device_name:  bedroom_yeelight_ceiling
-  friendly_name: Bedroom Ceiling
+  device_name:    !secret node_5_device_name
+  friendly_name:  !secret node_5_friendly_name
+  hardware_id:    !secret node_5_hardware_id
+  static_ip:      !secret node_5_static_ip
+  use_address:    !secret node_5_use_address
+  ssid:           !secret not_ssid
+  ssid_pw:        !secret not_password
+  ap_pw:          !secret ap_password 
+  gateway:        !secret not_gateway
+  subnet:         !secret not_subnet
+  ntp:            !secret ntp
 
 esphome:
-  name: ${device_name}
+  name: $device_name
   platform: ESP32
   board: esp32doit-devkit-v1
-  build_path: ./build/${device_name}
+  build_path: ./build/$device_name
   platformio_options:
     platform: espressif32@3.0.0
     platform_packages: tasmota/framework-arduinoespressif32 @ 3.10006.210420
-    
-#wifi:
-  #use_address: 10.25.30.221
-  #power_save_mode: none
-  #
+
+wifi:
+  use_address: $use_address
+  manual_ip:
+    static_ip: $static_ip
+    gateway: $gateway
+    subnet: $subnet
+
 packages:
   #Wifi Settings
-  wifi: !include includes/network.yaml
+  wifi: !include includes/network.yaml    
 
+#Device Specific Config
   
 sensor:
   - platform: adc
     pin: GPIO36
     name: "${friendly_name} adc1"
     attenuation: 11db
+    internal: true
   - platform: adc
     pin: GPIO32
     name: "${friendly_name} adc2"
     attenuation: 11db
+    internal: true
 
 output:
   - platform: ledc
@@ -46,7 +63,6 @@ output:
     pin: GPIO23
     id: output_nightlight
     frequency: 19531Hz #9765
-
 
 light:
   - platform: monochromatic

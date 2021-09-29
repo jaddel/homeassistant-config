@@ -88,7 +88,7 @@
       # Light
       - light.lifx_living_room_sofa
       - light.lifx_living_room_table
-      - light.ikea_bulb 
+      - light.living_room_ball
       # Covers
       - cover.living_room_shade_l
       - cover.living_room_shade_r

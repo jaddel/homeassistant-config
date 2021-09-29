@@ -65,7 +65,7 @@ guest_wc_wall_switch_remote:
   module: controllerx
   class: LightController
   integration: state
-  controller: binary_sensor.guest_wc_remote
+  controller: binary_sensor.guest_wc_shelly_remote
   light: light.lifx_guest_wc_ceiling
   mapping:
     "on": "toggle"

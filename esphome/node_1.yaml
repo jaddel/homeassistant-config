@@ -2,18 +2,17 @@
 
 # Variables
 substitutions:
-  device_name: !secret node_2_device_name
-  friendly_name: !secret node_2_friendly_name
-  hardware_id: !secret node_2_hardware_id
-  static_ip: !secret node_2_static_ip
-  use_address: !secret node_2_use_address
-  ssid: !secret ssid
-  ssid_pw: !secret ssid_pw
-  ap_pw: !secret ap_password 
-  gateway: !secret gateway
-  subnet: !secret subnet
-  ntp: !secret ntp
-
+  device_name:    !secret node_1_device_name
+  friendly_name:  !secret node_1_friendly_name
+  hardware_id:    !secret node_1_hardware_id
+  static_ip:      !secret node_1_static_ip
+  use_address:    !secret node_1_use_address
+  ssid:           !secret not_ssid
+  ssid_pw:        !secret not_password
+  ap_pw:          !secret ap_password 
+  gateway:        !secret not_gateway
+  subnet:         !secret not_subnet
+  ntp:            !secret ntp
 
 # Basic Config
 esphome:
@@ -21,13 +20,13 @@ esphome:
   platform: ESP8266
   board: esp01_1m
   build_path: ./build/${device_name}
-  
+
 wifi:
   use_address: $use_address
   manual_ip:
     static_ip: $static_ip
     gateway: $gateway
-    subnet: $subnet
+    subnet: $subnet  
 
 packages:
   #Wifi Settings

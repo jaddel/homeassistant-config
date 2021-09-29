@@ -1,0 +1,43 @@
+# Bluetooth Sniffer
+
+# Variables
+substitutions:
+  device_name:    !secret node_3_device_name
+  friendly_name:  !secret node_3_friendly_name
+  hardware_id:    !secret node_3_hardware_id
+  static_ip:      !secret node_3_static_ip
+  use_address:    !secret node_3_use_address
+  ssid:           !secret not_ssid
+  ssid_pw:        !secret not_password
+  ap_pw:          !secret ap_password 
+  gateway:        !secret not_gateway
+  subnet:         !secret not_subnet
+  ntp:            !secret ntp
+
+# Basic Config
+esphome:
+  name: $device_name
+  platform: ESP32
+  board: esp32dev
+  build_path: ./build/$device_name
+  
+wifi:
+  use_address: $use_address
+  manual_ip:
+    static_ip: $static_ip
+    gateway: $gateway
+    subnet: $subnet
+
+packages:
+  #Wifi Settings
+  wifi: !include includes/network.yaml
+
+# Device Specific Config
+
+# Example configuration entry for finding
+# Service UUIDs and iBeacon UUIDs and identifiers
+esp32_ble_tracker:
+
+text_sensor:
+  - platform: ble_scanner
+    name: "BLE Devices Scanner"

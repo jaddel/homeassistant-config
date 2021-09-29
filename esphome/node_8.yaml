@@ -1,20 +1,37 @@
+# shelly_4_i3_mutual_remote
+
+# Variables
 substitutions:
-  device_name: shelly_4_i3_mutual_remote
-  friendly_name: Mutual Shellyi3 Remote 
-  
+  device_name:    !secret node_8_device_name
+  friendly_name:  !secret node_8_friendly_name
+  hardware_id:    !secret node_8_hardware_id
+  static_ip:      !secret node_8_static_ip
+  use_address:    !secret node_8_use_address
+  ssid:           !secret not_ssid
+  ssid_pw:        !secret not_password
+  ap_pw:          !secret ap_password 
+  gateway:        !secret not_gateway
+  subnet:         !secret not_subnet
+  ntp:            !secret ntp
+
 # Basic Config
 esphome:
-  name: "${device_name}"
+  name: $device_name
   platform: ESP8266
   board: esp01_1m
-  build_path: ./build/${device_name}
+  build_path: ./build/$device_name
 
 wifi:
-  use_address: 10.25.30.106
-  
+  use_address: $use_address
+  manual_ip:
+    static_ip: $static_ip
+    gateway: $gateway
+    subnet: $subnet
+
 packages:
-  #Wifi Settings
   wifi: !include includes/network.yaml
+
+#Device Specific Config
 
 binary_sensor:
 

@@ -1,16 +1,16 @@
 #Wifi
 wifi:
   networks:
-  - ssid: !secret wifi_not_ssid
-    password: !secret wifi_not_password
+  - ssid: $ssid
+    password: $ssid_pw
   # If wifi can not connect reboot with in xx hours  
   reboot_timeout: 24h
   fast_connect: true
 
   #Access Point
   ap:
-    ssid: "${device_name}"
-    password: !secret wifi_ap_password
+    ssid: $device_name
+    password: $ap_pw
 
 #Captive Portal when ap is on
 captive_portal:
@@ -34,5 +34,5 @@ time:
   - platform: sntp
     id: sntp_time
     servers: 
-      - !secret ntp
+      - $ntp
     
