@@ -18,5 +18,4 @@ wifi:
 
 packages:
   wifi:   !include includes/network.yaml
-  board:  !include includes/boards/esp32dev.yaml
   device: !include includes/devices/bluetooth_sniffer.yaml

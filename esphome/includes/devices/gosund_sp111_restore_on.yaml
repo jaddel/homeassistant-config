@@ -1,4 +1,11 @@
 # Gosund Sp111 Base Confing, Relay defautls to ON.
+packages:
+  <<: !include_dir_named ../common
+
+esphome:
+  <<: !include .esphome.yaml
+  platform: ESP8266
+  board: esp8285
 
 output:
   - platform: gpio
@@ -41,7 +48,7 @@ binary_sensor:
 
 sensor:
   - platform: hlw8012
-    update_interval: 10s
+    update_interval: 3s
     change_mode_every: 3
     sel_pin:
       number: GPIO12
@@ -53,7 +60,7 @@ sensor:
       state_class: "measurement"
       name: "${friendly_name} Power"
       unit_of_measurement: W
-      id: "power_wattage"
+      id: device_power
       accuracy_decimals: 1
       filters:
         - calibrate_linear:
@@ -83,3 +90,21 @@ sensor:
             - 0.0 -> 0.0
             - 756.512 -> 238.0
       internal: true
+  - <<: !include ../sensors/total_daily_energy.yaml
+    power_id: device_power
+
+# Example configuration entry
+
+  - platform: pulse_counter
+      pin: 12
+      unit_of_measurement: 'kW'
+      name: ${friendly_name}
+      filters:
+        - multiply: 0.06  # (60s/1000 pulses per kWh)
+
+      total:
+        unit_of_measurement: 'kWh'
+        name: 'Energy Meter House'
+        filters:
+          - multiply: 0.001  # (1/1000 pulses per kWh)
+

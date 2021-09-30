@@ -1,5 +1,9 @@
 #Device Specific Config
-
+esphome:
+  <<: !include .esphome.yaml
+  platform: ESP8266
+  board: esp01_1m
+  
 switch:
   - platform: gpio
     pin: GPIO4

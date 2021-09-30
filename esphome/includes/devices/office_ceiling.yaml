@@ -1,4 +1,8 @@
 #Device Specific Config
+esphome:
+  <<: !include .esphome.yaml
+  platform: ESP32
+  board: esp32dev
 
 sensor:
   - platform: adc
@@ -48,9 +52,4 @@ light:
     on_turn_on:
       - light.turn_off: night_light
 
-switch:
-  - platform: restart
-    name: "${friendly_name} Restart"
-    id: restart_esp
-    disabled_by_default: true
 

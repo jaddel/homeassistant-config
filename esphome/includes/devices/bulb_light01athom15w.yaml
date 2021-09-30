@@ -1,5 +1,10 @@
 #Device Specific Config
+esphome:
+  <<: !include .esphome.yaml
+  platform: ESP8266
+  board: esp01_1m
 
+  
 output:
   - platform: esp8266_pwm
     pin: GPIO13

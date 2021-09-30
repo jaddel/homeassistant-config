@@ -19,4 +19,3 @@ wifi:
 packages:
   wifi:   !include includes/network.yaml
   device: !include includes/devices/gosund_sp111_restore_on.yaml
-  board:  !include includes/boards/esp8285.yaml

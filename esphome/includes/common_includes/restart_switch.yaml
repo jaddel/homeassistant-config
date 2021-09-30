@@ -1,6 +1,0 @@
-# Restart Switch
-
-switch:
-  - platform: restart
-    name: ${friendly_name} Restart
-    disabled_by_default: true

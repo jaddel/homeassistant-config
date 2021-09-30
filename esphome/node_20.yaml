@@ -15,12 +15,14 @@ substitutions:
 
 wifi:
   <<: !include includes/network_manual_ip.yaml
-
 packages:
   wifi:   !include includes/network.yaml
-  board:  !include includes/boards/esp01_1m.yaml
 
 # Device Specific Config
+esphome:
+  <<: !include .esphome.yaml
+  platform: ESP8266
+  board: esp01_1m
 
 output:
   - platform: gpio

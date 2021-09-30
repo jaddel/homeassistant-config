@@ -20,37 +20,5 @@ wifi:
 
 packages:
   wifi:   !include includes/network.yaml
-  device: !include includes/devices/shelly_25.yaml
-  board:  !include includes/boards/esp01_1m.yaml
+  device: !include includes/devices/shelly_25_kitchen.yaml
 
-fan:
-  - platform: binary
-    output: out_channel_2
-    name: "${channel_2}"
-    id: channel_2
-
-light:
-  - platform: binary
-    name: "${channel_1}"
-    restore_mode: RESTORE_DEFAULT_OFF
-    output: out_channel_1
-    id: channel_1
-
-binary_sensor:
-  - platform: gpio
-    pin:
-      number: GPIO13
-    name: "${channel_1}"
-    on_state:
-      then:
-        - light.toggle: channel_1
-    internal: true
-
-  - platform: gpio
-    pin:
-      number: GPIO5
-    name: "${channel_2}"
-    on_state:
-      then:
-        - fan.toggle: channel_2
-    internal: true

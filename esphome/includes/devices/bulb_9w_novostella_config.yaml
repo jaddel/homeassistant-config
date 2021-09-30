@@ -1,9 +1,8 @@
 # Basic Config
 esphome:
-  name: "${device_name}"
+  <<: !include .esphome.yaml
   platform: ESP8266
   board: esp01_1m
-  build_path: ./build/${device_name}
 
 output:
   - platform: esp8266_pwm

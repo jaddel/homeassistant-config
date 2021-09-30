@@ -2,10 +2,10 @@
 
 # Variables
 substitutions:
-  device_name:    !secret node_9_device_name
-  friendly_name:  !secret node_9_friendly_name
-  hardware_id:    !secret node_9_hardware_id
-  static_ip:      !secret node_9_static_ip
+  device_name:    !secret node_8_device_name
+  friendly_name:  !secret node_8_friendly_name
+  hardware_id:    !secret node_8_hardware_id
+  static_ip:      !secret node_8_static_ip
   ssid:           !secret not_ssid
   ssid_pw:        !secret not_password
   ap_pw:          !secret ap_password 
@@ -18,40 +18,6 @@ wifi:
 
 packages:
   wifi:   !include includes/network.yaml
-  board:  !include includes/boards/esp01_1m.yaml
+  device: !include includes/devices/shelly_3.yaml
 
-#Device Specific Config
-
-binary_sensor:
-
-#Hall Light
-  - platform: gpio
-    pin:
-      number: GPIO14
-      mode: INPUT
-    name: Top $friendly_name
-    id: sensorid1
-    filters:
-      - delayed_on_off: 80ms
-      
-#Kitchen Light
-  - platform: gpio
-    pin:
-      number: GPIO12
-      mode: INPUT
-    name: Mid $friendly_name
-    id: sensorid2
-    filters:
-      - delayed_on_off: 80ms
-
-#Living Room Light          
-  - platform: gpio
-    pin:
-      number: GPIO13
-      mode: INPUT
-      
-    name: Bottom $friendly_name
-    id: sensorid3
-    filters:
-      - delayed_on_off: 80ms
 

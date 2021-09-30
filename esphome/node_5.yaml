@@ -18,5 +18,4 @@ wifi:
 
 packages:
   wifi:   !include includes/network.yaml    
-  board:  !include includes/boards/xiaomi_ceiling.yaml
   device: !include includes/devices/bedroom_ceiling.yaml

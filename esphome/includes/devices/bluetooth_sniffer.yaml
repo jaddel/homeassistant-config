@@ -1,4 +1,8 @@
 # Device Specific Config
+esphome:
+  <<: !include .esphome.yaml
+  platform: ESP32
+  board: esp32dev
 
 # Example configuration entry for finding
 # Service UUIDs and iBeacon UUIDs and identifiers

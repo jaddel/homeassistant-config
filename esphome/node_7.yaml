@@ -2,10 +2,10 @@
 
 # Variables
 substitutions:
-  device_name:    !secret node_9_device_name
-  friendly_name:  !secret node_9_friendly_name
-  hardware_id:    !secret node_9_hardware_id
-  static_ip:      !secret node_9_static_ip
+  device_name:    !secret node_7_device_name
+  friendly_name:  !secret node_7_friendly_name
+  hardware_id:    !secret node_7_hardware_id
+  static_ip:      !secret node_7_static_ip
   ssid:           !secret not_ssid
   ssid_pw:        !secret not_password
   ap_pw:          !secret ap_password 
@@ -18,7 +18,6 @@ wifi:
 
 packages:
   wifi:   !include includes/network.yaml
-  board:  !include includes/boards/esp01_1m.yaml
   device: !include includes/devices/shelly_1_flip_remote.yaml
 
     

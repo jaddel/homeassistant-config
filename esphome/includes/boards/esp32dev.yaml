@@ -1,4 +1,0 @@
-esphome:
-  <<: !include .esphome.yaml
-  platform: ESP32
-  board: esp32dev

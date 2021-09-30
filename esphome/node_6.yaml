@@ -18,5 +18,4 @@ wifi:
 
 packages:
   wifi:   !include includes/network.yaml
-  boar:   !include includes/boards/esp32dev.yaml
   device: !include includes/devices/office_ceiling.yaml

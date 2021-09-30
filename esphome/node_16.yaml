@@ -18,7 +18,11 @@ wifi:
 
 packages:
   wifi:   !include includes/network.yaml
-  board:  !include includes/boards/esp8285.yaml
+
+esphome:
+  <<: !include .esphome.yaml
+  platform: ESP8266
+  board: esp01_1m
 
 binary_sensor:
   - platform: gpio
