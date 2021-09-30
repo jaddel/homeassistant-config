@@ -1,11 +1,11 @@
-# light01athom15w
+# Kitchen Dishwasher
 
 # Variables
 substitutions:
-  device_name:    !secret node_9_device_name
-  friendly_name:  !secret node_9_friendly_name
-  hardware_id:    !secret node_9_hardware_id
-  static_ip:      !secret node_9_static_ip
+  device_name:    !secret node_12_device_name
+  friendly_name:  !secret node_12_friendly_name
+  hardware_id:    !secret node_12_hardware_id
+  static_ip:      !secret node_12_static_ip
   ssid:           !secret not_ssid
   ssid_pw:        !secret not_password
   ap_pw:          !secret ap_password 
@@ -15,10 +15,8 @@ substitutions:
 
 wifi:
   <<: !include includes/network_manual_ip.yaml
-  
+
 packages:
   wifi:   !include includes/network.yaml
-  board:  !include includes/boards/esp01_1m.yaml
-  device: !include includes/devices/bulb_light01athom15w.yaml
-
-    
+  device: !include includes/devices/gosund_sp111_restore_on.yaml
+  board:  !include includes/boards/esp8285.yaml

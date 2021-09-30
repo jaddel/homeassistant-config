@@ -1,0 +1,49 @@
+#Device Specific Config
+  
+sensor:
+  - platform: adc
+    pin: GPIO36
+    name: "${friendly_name} adc1"
+    attenuation: 11db
+    internal: true
+  - platform: adc
+    pin: GPIO32
+    name: "${friendly_name} adc2"
+    attenuation: 11db
+    internal: true
+
+output:
+  - platform: ledc
+    pin: GPIO19
+    id: output_warm
+    frequency: 19531Hz #4882
+
+  - platform: ledc
+    pin: GPIO21
+    id: output_cold
+    frequency: 19531Hz #4882
+
+  - platform: ledc
+    pin: GPIO23
+    id: output_nightlight
+    frequency: 19531Hz #9765
+
+light:
+  - platform: monochromatic
+    name: "${friendly_name} Nightlight"
+    id: night_light
+    output: output_nightlight
+    gamma_correct: 0
+    on_turn_on:
+      - light.turn_off: ceiling_light
+  - platform: cwww
+    name: "${friendly_name}"
+    id: ceiling_light
+    cold_white: output_cold
+    warm_white: output_warm
+    cold_white_color_temperature: 6500 K
+    warm_white_color_temperature: 2700 K
+    gamma_correct: 0
+    constant_brightness: on
+    on_turn_on:
+      - light.turn_off: night_light

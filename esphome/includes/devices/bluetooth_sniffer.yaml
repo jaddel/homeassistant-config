@@ -1,0 +1,9 @@
+# Device Specific Config
+
+# Example configuration entry for finding
+# Service UUIDs and iBeacon UUIDs and identifiers
+esp32_ble_tracker:
+
+text_sensor:
+  - platform: ble_scanner
+    name: "BLE Devices Scanner"

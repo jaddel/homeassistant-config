@@ -2,4 +2,4 @@
 
 binary_sensor:
   - platform: status
-    name: $friendly_name
+    name: ${friendly_name} Api Connected

@@ -2,11 +2,10 @@
 
 # Variables
 substitutions:
-  device_name:    !secret node_8_device_name
-  friendly_name:  !secret node_8_friendly_name
-  hardware_id:    !secret node_8_hardware_id
-  static_ip:      !secret node_8_static_ip
-  use_address:    !secret node_8_use_address
+  device_name:    !secret node_9_device_name
+  friendly_name:  !secret node_9_friendly_name
+  hardware_id:    !secret node_9_hardware_id
+  static_ip:      !secret node_9_static_ip
   ssid:           !secret not_ssid
   ssid_pw:        !secret not_password
   ap_pw:          !secret ap_password 
@@ -14,22 +13,12 @@ substitutions:
   subnet:         !secret not_subnet
   ntp:            !secret ntp
 
-# Basic Config
-esphome:
-  name: $device_name
-  platform: ESP8266
-  board: esp01_1m
-  build_path: ./build/$device_name
-
 wifi:
-  use_address: $use_address
-  manual_ip:
-    static_ip: $static_ip
-    gateway: $gateway
-    subnet: $subnet
+  <<: !include includes/network_manual_ip.yaml
 
 packages:
-  wifi: !include includes/network.yaml
+  wifi:   !include includes/network.yaml
+  board:  !include includes/boards/esp01_1m.yaml
 
 #Device Specific Config
 

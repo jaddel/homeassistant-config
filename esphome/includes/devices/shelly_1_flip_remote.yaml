@@ -1,0 +1,13 @@
+#Device Specific Config
+
+switch:
+  - platform: gpio
+    pin: GPIO4
+    name: "${friendly_name} Fan"
+    restore_mode: ALWAYS_OFF
+    disabled_by_default: true
+    
+binary_sensor:                         
+  - platform: gpio                     
+    pin: GPIO5                              
+    name: "${friendly_name} Remote"

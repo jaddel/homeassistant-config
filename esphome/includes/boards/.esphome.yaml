@@ -1,0 +1,9 @@
+---
+# ESPHome Core configuration
+#
+# Sets the defaults for the main core configuration of my ESPHome devices.
+#
+# https://esphome.io/components/esphome.html
+#
+name: "${device_name}"
+build_path: "./.build/${device_name}/"

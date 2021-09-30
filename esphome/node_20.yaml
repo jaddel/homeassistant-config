@@ -1,0 +1,53 @@
+# shelly_7_laundry
+
+# Variables
+substitutions:
+  device_name:    !secret node_20_device_name
+  friendly_name:  !secret node_20_friendly_name
+  hardware_id:    !secret node_20_hardware_id
+  static_ip:      !secret node_20_static_ip
+  ssid:           !secret not_ssid
+  ssid_pw:        !secret not_password
+  ap_pw:          !secret ap_password 
+  gateway:        !secret not_gateway
+  subnet:         !secret not_subnet
+  ntp:            !secret ntp
+
+wifi:
+  <<: !include includes/network_manual_ip.yaml
+
+packages:
+  wifi:   !include includes/network.yaml
+  board:  !include includes/boards/esp01_1m.yaml
+
+# Device Specific Config
+
+output:
+  - platform: gpio
+    pin: GPIO4
+    id: relayid
+
+light:
+  - platform: binary
+    name: "${friendly_name}"
+    output: relayid
+    id: lightid
+    on_turn_on:
+      then:
+        - delay: 180s
+        - light.turn_off: lightid
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO5
+    name: "${friendly_name}"
+    on_state:
+      then:
+        - light.toggle: lightid
+    internal: true
+    id: sensorid
+
+  - platform: template
+    name: "Auto OFF"
+    id: auto_off

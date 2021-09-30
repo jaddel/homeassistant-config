@@ -1,0 +1,34 @@
+#Device Specific Config
+
+output:
+  - platform: esp8266_pwm
+    pin: GPIO13
+    id: out_ct
+    inverted: true
+  - platform: esp8266_pwm
+    pin: GPIO5
+    id: out_b
+  - platform: esp8266_pwm
+    pin: GPIO4
+    id: out_red
+  - platform: esp8266_pwm
+    pin: GPIO12
+    id: out_green
+  - platform: esp8266_pwm
+    pin: GPIO14
+    id: out_blue
+
+# Example configuration entry
+light:
+  - platform: rgbct
+    name: $friendly_name
+    red: out_red
+    green: out_green
+    blue: out_blue
+    color_temperature: out_ct
+    white_brightness: out_b
+    cold_white_color_temperature: 153 mireds
+    warm_white_color_temperature: 500 mireds
+    gamma_correct: 1.5
+    default_transition_length: 0s
+    color_interlock: true

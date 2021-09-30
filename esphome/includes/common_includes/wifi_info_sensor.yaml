@@ -5,10 +5,10 @@
 text_sensor:
   - platform: wifi_info
     ip_address:
-      name: ESP IP Address
+      name: ${friendly_name} IP Address
     ssid:
-      name: ESP Connected SSID
+      name: ${friendly_name} Connected SSID
     bssid:
-      name: ESP Connected BSSID
+      name: ${friendly_name} Connected BSSID
     mac_address:
-      name: ESP Mac Wifi Address
+      name: ${friendly_name} Mac Wifi Address

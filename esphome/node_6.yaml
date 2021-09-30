@@ -6,7 +6,6 @@ substitutions:
   friendly_name:  !secret node_6_friendly_name
   hardware_id:    !secret node_6_hardware_id
   static_ip:      !secret node_6_static_ip
-  use_address:    !secret node_6_use_address
   ssid:           !secret not_ssid
   ssid_pw:        !secret not_password
   ap_pw:          !secret ap_password 
@@ -14,75 +13,10 @@ substitutions:
   subnet:         !secret not_subnet
   ntp:            !secret ntp
 
-esphome:
-  name: $device_name
-  platform: ESP32
-  board: esp32dev
-  build_path: ./build/$device_name
-
 wifi:
-  use_address: $use_address
-  manual_ip:
-    static_ip: $static_ip
-    gateway: $gateway
-    subnet: $subnet
+  <<: !include includes/network_manual_ip.yaml
 
 packages:
-  wifi: !include includes/network.yaml
-
-#Device Specific Config
-
-sensor:
-  - platform: adc
-    pin: GPIO36
-    name: "${friendly_name} adc1"
-    attenuation: 11db
-    internal: true
-  - platform: adc
-    pin: GPIO32
-    name: "${friendly_name} adc2"
-    attenuation: 11db
-    internal: true
-
-output:
-  - platform: ledc
-    pin: GPIO19
-    id: output_warm
-    frequency: 4882Hz
-
-  - platform: ledc
-    pin: GPIO21
-    id: output_cold
-    frequency: 4882Hz
-
-  - platform: ledc
-    pin: GPIO23
-    id: output_nightlight
-    frequency: 9765Hz
-
-light:
-  - platform: monochromatic
-    name: "${friendly_name} Nightlight"
-    id: night_light
-    output: output_nightlight
-    gamma_correct: 0
-    on_turn_on:
-      - light.turn_off: day_light
-  - platform: cwww
-    name: "${friendly_name}"
-    id: day_light
-    cold_white: output_cold
-    warm_white: output_warm
-    cold_white_color_temperature: 6500 K
-    warm_white_color_temperature: 2700 K
-    gamma_correct: 0
-    constant_brightness: on
-    on_turn_on:
-      - light.turn_off: night_light
-
-switch:
-  - platform: restart
-    name: "${friendly_name} Restart"
-    id: restart_esp
-    disabled_by_default: true
-
+  wifi:   !include includes/network.yaml
+  boar:   !include includes/boards/esp32dev.yaml
+  device: !include includes/devices/office_ceiling.yaml

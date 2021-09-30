@@ -1,20 +1,24 @@
+# socket_multi_office_desk
+
+# Variables
 substitutions:
-  device_name: socket_multi_office_desk
-  friendly_name: Office Desk Multi Socket
+  device_name:    !secret node_16_device_name
+  friendly_name:  !secret node_16_friendly_name
+  hardware_id:    !secret node_16_hardware_id
+  static_ip:      !secret node_16_static_ip
+  ssid:           !secret not_ssid
+  ssid_pw:        !secret not_password
+  ap_pw:          !secret ap_password 
+  gateway:        !secret not_gateway
+  subnet:         !secret not_subnet
+  ntp:            !secret ntp
 
-esphome:
-  name: "${device_name}"
-  platform: ESP8266
-  board: esp01_1m
-  build_path: ./build/${device_name}
-  board_flash_mode: dout
+wifi:
+  <<: !include includes/network_manual_ip.yaml
 
-#wifi:
-#  use_address: 10.25.30.100
-  
 packages:
-  #Wifi Settings
-  wifi: !include includes/network.yaml
+  wifi:   !include includes/network.yaml
+  board:  !include includes/boards/esp8285.yaml
 
 binary_sensor:
   - platform: gpio
@@ -24,7 +28,6 @@ binary_sensor:
     name: "${friendly_name} Button"
     internal: true 
     
-
 switch:
   - platform: gpio
     name: "${friendly_name} Nubert"

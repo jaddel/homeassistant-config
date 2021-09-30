@@ -1,0 +1,4 @@
+manual_ip:
+  static_ip: $static_ip
+  gateway: $gateway
+  subnet: $subnet

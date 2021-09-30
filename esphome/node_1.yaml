@@ -2,11 +2,10 @@
 
 # Variables
 substitutions:
-  device_name:    !secret node_1_device_name
-  friendly_name:  !secret node_1_friendly_name
-  hardware_id:    !secret node_1_hardware_id
-  static_ip:      !secret node_1_static_ip
-  use_address:    !secret node_1_use_address
+  device_name:    !secret node_9_device_name
+  friendly_name:  !secret node_9_friendly_name
+  hardware_id:    !secret node_9_hardware_id
+  static_ip:      !secret node_9_static_ip
   ssid:           !secret not_ssid
   ssid_pw:        !secret not_password
   ap_pw:          !secret ap_password 
@@ -14,86 +13,11 @@ substitutions:
   subnet:         !secret not_subnet
   ntp:            !secret ntp
 
-# Basic Config
-esphome:
-  name: "${device_name}"
-  platform: ESP8266
-  board: esp01_1m
-  build_path: ./build/${device_name}
-
 wifi:
-  use_address: $use_address
-  manual_ip:
-    static_ip: $static_ip
-    gateway: $gateway
-    subnet: $subnet  
+  <<: !include includes/network_manual_ip.yaml
 
 packages:
-  #Wifi Settings
-  wifi: !include includes/network.yaml
+  wifi:   !include includes/network.yaml
+  board:  !include includes/boards/esp01_1m.yaml
+  device: !include includes/devices/shelly_1_push_remote.yaml
 
-#Device Specific Config
-
-switch:
-  - platform: gpio
-    pin: GPIO4
-    name: "${friendly_name}"
-    restore_mode: ALWAYS_OFF
-    internal: true
-
-
-binary_sensor:     
-
-  - platform: gpio                     
-    pin: GPIO5                              
-    id: real_sensor_temp
-    internal: true
-    on_multi_click:
-      - timing:
-          - ON for at most 1s
-          - OFF for at most 1s
-          - ON for at most 1s
-          - OFF for at least 0.2s
-        then:
-          - logger.log: "Double Clicked"
-          - lambda: |-
-              if (id(template_sensor_2).state) {
-              id(template_sensor_2).publish_state(false);
-              } else {
-              id(template_sensor_2).publish_state(true); 
-              }
-            
-      - timing:
-          - ON for 1s to 5s
-          - OFF for at least 0.5s
-        then:
-          - logger.log: "Single Long Clicked"
-          - lambda: |-
-              if (id(template_sensor_3).state) {
-              id(template_sensor_3).publish_state(false);
-              } else {
-              id(template_sensor_3).publish_state(true); 
-              }
-
-      - timing:
-          - ON for at most 1s
-          - OFF for at least 0.5s
-        then:
-          - logger.log: "Single Short Clicked"
-          - lambda: |-
-              if (id(template_sensor_1).state) {
-              id(template_sensor_1).publish_state(false);
-              } else { 
-              id(template_sensor_1).publish_state(true);
-              }
-            
-
-  - platform: template
-    name: "${friendly_name} 1"
-    id: template_sensor_1
-  - platform: template
-    name: "${friendly_name} 2"
-    id: template_sensor_2
-  - platform: template
-    name: "${friendly_name} 3"
-    id: template_sensor_3

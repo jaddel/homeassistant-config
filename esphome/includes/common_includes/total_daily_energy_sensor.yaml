@@ -2,7 +2,7 @@
 
 sensor:
   - platform: total_daily_energy
-    name: "Total Daily Energy"
+    name: ${friendly_name} Total Daily Energy
     power_id: my_power
 
   # The power sensor to convert, can be any power sensor

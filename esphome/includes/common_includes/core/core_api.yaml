@@ -1,4 +1,0 @@
-# Homeassitant API
-
-api:
-  reboot_timeout: 60min

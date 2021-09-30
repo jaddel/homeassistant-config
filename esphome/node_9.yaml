@@ -1,4 +1,4 @@
-# light01athom15w
+# Washing Machine
 
 # Variables
 substitutions:
@@ -15,10 +15,8 @@ substitutions:
 
 wifi:
   <<: !include includes/network_manual_ip.yaml
-  
+
 packages:
   wifi:   !include includes/network.yaml
-  board:  !include includes/boards/esp01_1m.yaml
-  device: !include includes/devices/bulb_light01athom15w.yaml
-
-    
+  device: !include includes/devices/gosund_sp111_restore_on.yaml
+  board:  !include includes/boards/esp8285.yaml
