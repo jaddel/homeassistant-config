@@ -19,3 +19,6 @@ wifi:
 packages:
   wifi:   !include includes/network.yaml
   device: !include includes/devices/gosund_sp111_restore_on.yaml
+
+sensor:
+  - <<: !include includes/sensors/pulse_meter.yaml

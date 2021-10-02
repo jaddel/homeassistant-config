@@ -1,4 +1,8 @@
 # Gosund Sp111 Base Confing, Relay defautls to ON.
+# If you use this template be aware that different versions of this plug exist.
+# I grouped them in the gsheet below.
+# https://docs.google.com/spreadsheets/d/1SL-N8V5TfUvrYqx9DcNiYm6hDFtqOX6M2BlFxSOUfBo/edit?usp=sharing
+
 packages:
   <<: !include_dir_named ../common
 
@@ -90,6 +94,6 @@ sensor:
             - 0.0 -> 0.0
             - 756.512 -> 238.0
       internal: true
+
   - <<: !include ../sensors/total_daily_energy.yaml
-    power_id: device_power
 

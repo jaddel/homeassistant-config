@@ -1,0 +1,36 @@
+
+# Example configuration entry
+
+  - platform: pulse_meter
+    pin:
+      number: GPIO12
+      inverted: True
+    unit_of_measurement: 'kW'
+    id: pls_meter
+    name: "${friendly_name} Usage"
+    filters:
+      - multiply: 0.06
+      - calibrate_linear:
+          - 0 -> 0.6
+          - 38.892 -> 6.0
+          - 66.2 -> 9.6
+          - 59.579 -> 8.8
+          - 3882.165 -> 512.0
+          - 7605.047 -> 1003
+          - 12075 -> 1580
+
+    total:
+      name: "${friendly_name} Total"
+      unit_of_measurement: "kWh"
+      accuracy_decimals: 3
+      id: pls_meter_kwh
+      filters:
+        - multiply: 1e-3 
+        - calibrate_linear:
+            - 0 -> 0.6
+            - 38.892 -> 6.0
+            - 66.2 -> 9.6
+            - 59.579 -> 8.8
+            - 3882.165 -> 512.0
+            - 7605.047 -> 1003
+            - 12075 -> 1580

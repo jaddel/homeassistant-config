@@ -8,28 +8,18 @@ output:
   - platform: esp8266_pwm
     id: output_red
     pin: GPIO4
-    #min_power: 0.01
-    #max_power: 0.75
   - platform: esp8266_pwm
     id: output_green
     pin: GPIO12
-    #min_power: 0.01
-    #max_power: 0.75
   - platform: esp8266_pwm
     id: output_blue
     pin: GPIO14
-    #min_power: 0.01
-    #max_power: 0.75
   - platform: esp8266_pwm
     id: output_cw
     pin: GPIO5
-    #min_power: 0.01
-    #max_power: 0.0
   - platform: esp8266_pwm
     id: output_ww
     pin: GPIO13
-    #min_power: 0.0003
-    #max_power: 0.75
 
 
 light:

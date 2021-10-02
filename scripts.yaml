@@ -114,3 +114,36 @@ clean_the_kitchen:
       entity_id: vacuum.living_room_roomba
   mode: single
   alias: Clean the kitchen
+apple_tv_wake:
+  alias: Apple TV wake
+  sequence:
+  - service: remote.send_command
+    target:
+      entity_id: remote.living_room_apple_tv
+    data:
+      command: menu
+  mode: single
+turn_off_projector:
+  alias: Turn off projector
+  sequence:
+  - service: androidtv.adb_command
+    data:
+      entity_id: media_player.wemaxa300
+      command: POWER
+  - service: androidtv.adb_command
+    data:
+      entity_id: media_player.wemaxa300
+      command: CENTER
+apple_tv_sleep:
+  alias: Apple TV sleep
+  sequence:
+  - service: remote.send_command
+    target:
+      entity_id: remote.living_room_apple_tv
+    data:
+      command:
+      - select
+      - home_hold
+      - select
+      delay_secs: 1
+  mode: single

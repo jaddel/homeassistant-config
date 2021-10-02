@@ -14,143 +14,6 @@
     data:
       message: The mail is here! :)
   mode: single
-- id: '1615316736000'
-  alias: Kitchen Light Wall Switch Remote
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: binary_sensor.bottom_mutual_shellyi3_remote
-    from:
-    - 'on'
-    - 'off'
-    to:
-    - 'on'
-    - 'off'
-  condition: []
-  action:
-  - type: toggle
-    device_id: 71bdf938d35371710190f13982c8fd9a
-    entity_id: light.lifx_kitchen_ceiling
-    domain: light
-  mode: restart
-- id: '1615317045718'
-  alias: Light Remote Living Room
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: binary_sensor.mid_mutual_shellyi3_remote
-    from:
-    - 'on'
-    - 'off'
-    to:
-    - 'on'
-    - 'off'
-  condition: []
-  action:
-  - service: light.toggle
-    data: {}
-    target:
-      entity_id: light.lg_living_room
-  mode: restart
-- id: '1615317081015'
-  alias: Hall Light Wall Switch Remote
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: binary_sensor.top_mutual_shellyi3_remote
-    from:
-    - 'on'
-    - 'off'
-    to:
-    - 'on'
-    - 'off'
-  condition: []
-  action:
-  - service: light.toggle
-    data: {}
-    target:
-      area_id: hall
-  mode: restart
-- id: '1615318020387'
-  alias: Light Remote Bedroom
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: binary_sensor.bedroom_shelly_remote
-  condition: []
-  action:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: input_boolean.sleep_mode
-        state: 'on'
-      sequence:
-      - service: light.toggle
-        data:
-          brightness: 30
-          transition: 1
-        target:
-          entity_id: light.bedroom_ambient
-    default:
-    - choose:
-      - conditions:
-        - condition: time
-          after: '21:00'
-          weekday:
-          - mon
-          - tue
-          - wed
-          - thu
-          - sun
-        sequence:
-        - service: light.toggle
-          data:
-            brightness_pct: 40
-          target:
-            entity_id: light.bedroom_ambient
-      default:
-      - service: light.toggle
-        data:
-          brightness_pct: 100
-        target:
-          entity_id: light.bedroom_ambient
-  mode: restart
-- id: '1615479835436'
-  alias: Light Remote Guest WC
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: binary_sensor.guest_wc_remote
-    to:
-    - 'on'
-    - 'off'
-    from:
-    - 'on'
-    - 'off'
-  condition: []
-  action:
-  - service: light.toggle
-    data: {}
-    target:
-      entity_id: light.lifx_guest_wc_ceiling
-  mode: restart
-- id: '1615479873916'
-  alias: 'Bathroom Light Wall Switch Remote '
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: binary_sensor.bathroom_remote
-    from:
-    - 'on'
-    - 'off'
-    to: on,off
-  condition: []
-  action:
-  - service: light.toggle
-    data: {}
-    target:
-      entity_id: light.lifx_bathroom_ceiling
-  mode: restart
 - id: '1615494969540'
   alias: Office Wall Switch Single Click
   description: ''
@@ -213,7 +76,7 @@
       target_entity: light.lifx_guest_wc_ceiling
       no_motion_wait: input_number.guest_wc_motion_timeout
 - id: '1615602131663'
-  alias: Kitchen Exhaust Fan Automatic Mode
+  alias: Kitchen Exhaust Fan triggere by "someone is cooking"
   description: ''
   trigger:
   - platform: state
@@ -221,9 +84,7 @@
     from:
     - 'on'
     - 'off'
-    to:
-    - 'on'
-    - 'off'
+    to: on,off
   condition: []
   action:
   - choose:
@@ -470,8 +331,8 @@
       sequence:
       - type: turn_on
         device_id: 6b54ae295d297f9368f15ed1e9199658
-        entity_id: light.kitchen_cooking
-        domain: light
+        entity_id: switch.kitchen_cooking
+        domain: switch
     - conditions:
       - type: is_not_open
         condition: device
@@ -481,8 +342,8 @@
       sequence:
       - type: turn_off
         device_id: 6b54ae295d297f9368f15ed1e9199658
-        entity_id: light.kitchen_cooking
-        domain: light
+        entity_id: switch.kitchen_cooking
+        domain: switch
     default: []
   mode: single
 - id: '1621762109830'
@@ -640,18 +501,6 @@
     target:
       entity_id: input_boolean.tester_output
   mode: single
-- id: '1628800427627'
-  alias: test
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: sensor.last_active_sensor
-  condition: []
-  action:
-  - service: input_boolean.toggle
-    target:
-      entity_id: input_boolean.tester_input
-  mode: single
 - id: '1628920325018'
   alias: Office Desk PC - Peripherals Automation
   description: ''
@@ -764,41 +613,33 @@
       type: set_position
       position: 19
   mode: restart
-- id: '1630584320741'
-  alias: Kitchen  Exhaust Humidity
+- id: '1633116670134'
+  alias: Bedroom Wall Switch Single
   description: ''
   trigger:
-  - type: humidity
+  - type: turned_on
     platform: device
-    device_id: 983a42d2a0a16c4968d3ac9f2e188e2d
-    entity_id: sensor.kitchen_cooking_lumi_humidity
-    domain: sensor
-    above: 80
-    id: 'on'
-  - type: humidity
+    device_id: f266b963ca7a66d3c4ae44aa0d50c29b
+    entity_id: binary_sensor.bedroom_wall_switch_1
+    domain: binary_sensor
+  - type: turned_off
     platform: device
-    device_id: 983a42d2a0a16c4968d3ac9f2e188e2d
-    entity_id: sensor.kitchen_cooking_lumi_humidity
-    domain: sensor
-    above: 0
-    id: 'off'
-    below: 80
+    device_id: f266b963ca7a66d3c4ae44aa0d50c29b
+    entity_id: binary_sensor.bedroom_wall_switch_1
+    domain: binary_sensor
   condition: []
   action:
   - choose:
     - conditions:
-      - condition: trigger
-        id: 'on'
+      - condition: state
+        state: 'on'
+        entity_id: light.lg_internal_bedroom_all
       sequence:
-      - device_id: c8bfb20bb8775a326709ff73c5a26558
-        domain: fan
-        entity_id: fan.kitchen_exhaust_fan
-        type: turn_on
+      - service: light.turn_off
+        target:
+          entity_id: light.lg_internal_bedroom_all
     default:
-    - condition: trigger
-      id: 'off'
-    - device_id: c8bfb20bb8775a326709ff73c5a26558
-      domain: fan
-      entity_id: fan.kitchen_exhaust_fan
-      type: turn_off
-  mode: single
+    - service: light.turn_on
+      target:
+        entity_id: light.bedroom_ambient
+  mode: restart

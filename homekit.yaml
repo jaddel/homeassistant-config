@@ -194,6 +194,7 @@
       - script.home_assistent_restart_appdameon
       - script.home_assistent_restart_core
       - input_boolean.sleep_mode
+      - switch.projector_wemaxa300
   entity_config:
     # Scripts
     script.home_assistent_restart_appdameon:
@@ -202,4 +203,6 @@
       name: Restart HA Core
     input_boolean.sleep_mode:
       name: Sleep Mode
+    switch.projector_wemaxa300:
+      name: Projector
 

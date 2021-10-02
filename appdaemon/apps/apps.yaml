@@ -27,15 +27,15 @@ office_lights:
 
 ## Kitchen
 
-kitchen_cooking_fan_slide_remote:
-  module: controllerx
-  class: LightController
-  integration: state
-  controller: binary_sensor.kitchen_cooking_magnet_sensor
-  light: light.kitchen_cooking
-  mapping:
-    "on": "on"
-    "off": "off"
+#kitchen_cooking_fan_slide_remote:
+#  module: controllerx
+#  class: LightController
+#  integration: state
+#  controller: binary_sensor.kitchen_cooking_magnet_sensor
+#  light: light.kitchen_cooking
+#  mapping:
+#    "on": "on"
+#    "off": "off"
 
 kitchen_wall_switch_remote: #Living Room
   module: controllerx
@@ -147,7 +147,10 @@ bedroom_wall_switch_1:
   class: LightController
   integration: state
   controller: binary_sensor.bedroom_wall_switch_1
-  light: light.bedroom_ambient
+  light: >- 
+    {% if is_state('light.lg_internal_bedroom', 'on') %}
+    {{"light.lg_internal_bedroom_all"}}
+    {% else %}{{"light.bedroom_ambient"}}{% endif %}
   mapping:
     "on": "toggle"
     "off": "toggle"

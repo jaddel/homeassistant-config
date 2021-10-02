@@ -18,4 +18,4 @@ wifi:
 
 packages:
   wifi:   !include includes/network.yaml    
-  device: !include includes/devices/bedroom_ceiling.yaml
+  device: !include includes/devices/ceiling_yeelight_ylxd41xl.yaml

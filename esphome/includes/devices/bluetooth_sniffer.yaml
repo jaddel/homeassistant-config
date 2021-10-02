@@ -6,8 +6,12 @@ esphome:
 
 # Example configuration entry for finding
 # Service UUIDs and iBeacon UUIDs and identifiers
-esp32_ble_tracker:
 
-text_sensor:
-  - platform: ble_scanner
-    name: "BLE Devices Scanner"
+
+esp32_ble_server:
+
+
+
+#ble_client:
+#  - mac_address: 2E:F8:55:12:48:17
+#    id: beamer_remote

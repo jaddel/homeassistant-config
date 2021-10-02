@@ -18,4 +18,4 @@ wifi:
 
 packages:
   wifi:   !include includes/network.yaml
-  device: !include includes/devices/office_ceiling.yaml
+  device: !include includes/devices/ceiling_yeelight_YLXD05YL.yaml

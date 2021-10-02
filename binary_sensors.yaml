@@ -59,13 +59,13 @@
         {{ states.person |selectattr('state', 'eq', 
         'home')|list|length > 0 }}
         
-## The Projector is ON/OFF
+## Max PC in use
 - platform: template
   sensors:
     max_pc_in_use:
       friendly_name: "Max PC in use"
       value_template: >-
-        {{ (states('sensor.office_desk_peripherals_power')|float > 20.0) or
+        {{ (states('sensor.office_desk_peripherals_power')|float > 25.0) or
         ((as_timestamp(now()) - as_timestamp(
         states.sensor.last_active_sensor.last_changed))|float < 60)  }}
 

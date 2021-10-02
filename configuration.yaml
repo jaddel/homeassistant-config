@@ -1,9 +1,16 @@
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 
-# Text to speech
+
+ # Example configuration.yaml entry for Google Translate TTS service
+
 tts:
   - platform: google_translate
+    cache: true
+    cache_dir: /tmp/tts
+    time_memory: 300
+    base_url: http://10.25.10.2:8123
+    service_name: google_say
 
 group: !include groups.yaml
 automation: !include automations.yaml
@@ -17,20 +24,27 @@ binary_sensor: !include binary_sensors.yaml
 homekit: !include homekit.yaml
 input_select: !include input_selects.yaml
 entity_controller: !include entity_conroller.yaml
-
-homeassistant:
-  customize: !include customize.yaml
+  
 
 http:
   use_x_forwarded_for: true
   trusted_proxies:
     - 172.30.33.0/24 # Add the IP address of the proxy server
 
+# Example configuration.yaml entry
+media_player:
+  # Use the Python ADB implementation
+  - platform: androidtv
+    name: WemaxA300
+    host: 10.25.90.167
+    port: 5555
+
 logger:
   default: warning
   logs:
     homeassistant.components.homekit: debug
     pyhap: debug
+
 
 recorder:
   db_url: !secret mariadb_url
