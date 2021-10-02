@@ -9,6 +9,7 @@
     - Night mode off?
     - Different brightness settings for adaptive lightning.
     - Hall motion off.
+    - Shade automation off.
     - Kitchen motion off.
 - Input boolean supervised guest mode.
     - Guest bathroom moderate night mode.

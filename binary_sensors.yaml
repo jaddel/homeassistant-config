@@ -5,11 +5,11 @@
       friendly_name: "Bathroom Shower Occupancy"
       device_class: occupancy
       delay_on:
-        seconds: 10
+        seconds: 2
       #delay_off:
-      #  minutes: 5
+      #  minutes: 3
       value_template: >-
-        {{ (is_state('binary_sensor.bathroom_shower_drain', 'on')) or (states('sensor.bathroom_humidity')|float > 60) }}"
+        {{ states('sensor.bathroom_humidity')|float > 70 }}
 
 ## Someone is cooking
 - platform: template
