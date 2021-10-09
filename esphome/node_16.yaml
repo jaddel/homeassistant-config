@@ -30,28 +30,47 @@ binary_sensor:
       number: GPIO3
       inverted: false
     name: "${friendly_name} Button"
-    internal: true 
+    internal: true
+    on_click:
+    - min_length: 50ms
+      max_length: 350ms
+      then:
+        - switch.turn_on: sw_4
+        - switch.turn_on: sw_3
+        - switch.turn_on: sw_2
+        - switch.turn_on: sw_1    
+    - min_length: 500ms
+      max_length: 1000ms
+      then:
+        - switch.turn_off: sw_4
+        - switch.turn_off: sw_3
+        - switch.turn_off: sw_2
+        - switch.turn_off: sw_1 
     
 switch:
   - platform: gpio
-    name: "${friendly_name} Nubert"
+    name: "${friendly_name} 4"
     pin: GPIO05
-    id: nubert
+    id: sw_4
     restore_mode: ALWAYS_ON
+    on_turn_on:
+      then:
+        - delay: 2hours
+        - switch.turn_off: sw_4
   - platform: gpio
-    name: "${friendly_name} Display"
+    name: "${friendly_name} 3"
     pin: GPIO04
-    id: display
+    id: sw_3
     restore_mode: ALWAYS_ON
   - platform: gpio
-    name: "${friendly_name} PC"
+    name: "${friendly_name} 2"
     pin: GPIO12
-    id: macbook
+    id: sw_2
     restore_mode: ALWAYS_ON
   - platform: gpio
-    name: "${friendly_name} Desk"
+    name: "${friendly_name} 1"
     pin: GPIO13
-    id: desk
+    id: sw_1
     restore_mode: ALWAYS_ON
   - platform: gpio
     name: "${friendly_name} USB"

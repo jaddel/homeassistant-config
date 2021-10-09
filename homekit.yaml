@@ -77,8 +77,8 @@
     cover.bedroom_shade:
       name: Bedroom Shade
     # Scripts
-    cover.bedroom_privacy:
-      name: Bedroom Privacy
+    #cover.bedroom_privacy:
+    #  name: Bedroom Privacy
 
 ### Living Room
 - name: living_room_hkb
@@ -112,8 +112,8 @@
     vacuum.living_room_roomba:
       name: Living Room Roomba
     # Scripts
-    script.living_room_privacy:
-      name: Living Room Privacy
+    #script.living_room_privacy:
+    #  name: Living Room Privacy
 
 ### Hall
 - name: hall_hkb
@@ -163,7 +163,7 @@
     include_entities:
       # Light
       - light.kitchen_spot
-      - light.kitchen_cooking
+      - light.kitchen_cooking      
       - light.lifx_kitchen_ceiling
       # Fan
       - fan.kitchen_exhaust_fan

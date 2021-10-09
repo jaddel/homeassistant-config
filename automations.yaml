@@ -13,6 +13,17 @@
   - service: notify.mobile_app_freyas_iphone
     data:
       message: The mail is here! :)
+  - service: automation.turn_off
+    target:
+      entity_id: automation.mail_notification
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 30
+      milliseconds: 0
+  - service: automation.turn_on
+    target:
+      entity_id: automation.mail_notification
   mode: single
 - id: '1615494969540'
   alias: Office Wall Switch Single Click
@@ -182,7 +193,10 @@
   - platform: state
     entity_id: binary_sensor.bathroom_shower_occupancy
     to: 'on'
-  condition: []
+  condition:
+  - condition: numeric_state
+    entity_id: cover.bedroom_shade
+    above: '40'
   action:
   - device_id: 63b9ded74bb862642883def47ac47612
     domain: cover
@@ -255,7 +269,7 @@
   - service: input_boolean.turn_on
     target:
       entity_id: input_boolean.cleaned_today
-  - device_id: d8d3bc2e142783a91b5aaa830508a270
+  - device_id: 0821e42b3324dc9b5d038af83de55e33
     domain: vacuum
     entity_id: vacuum.living_room_roomba
     type: clean
@@ -331,8 +345,8 @@
       sequence:
       - type: turn_on
         device_id: 6b54ae295d297f9368f15ed1e9199658
-        entity_id: switch.kitchen_cooking
-        domain: switch
+        entity_id: light.kitchen_cooking
+        domain: light
     - conditions:
       - type: is_not_open
         condition: device
@@ -342,8 +356,8 @@
       sequence:
       - type: turn_off
         device_id: 6b54ae295d297f9368f15ed1e9199658
-        entity_id: switch.kitchen_cooking
-        domain: switch
+        entity_id: light.kitchen_cooking
+        domain: light
     default: []
   mode: single
 - id: '1621762109830'
@@ -643,3 +657,21 @@
       target:
         entity_id: light.bedroom_ambient
   mode: restart
+- id: '1633179076954'
+  alias: Main Door Open
+  description: ''
+  trigger:
+  - type: opened
+    platform: device
+    device_id: 38279d146f666006ef4db89fb4157919
+    entity_id: binary_sensor.lumi_lumi_sensor_magnet_aq2_on_off
+    domain: binary_sensor
+  condition:
+  - condition: state
+    state: 'off'
+    entity_id: binary_sensor.someone_home
+  action:
+  - service: notify.awsome_people
+    data:
+      message: Main Door Open
+  mode: single

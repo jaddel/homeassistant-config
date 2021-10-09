@@ -9,27 +9,22 @@
 # Office
 
   - platform: group
-    name: LG Office Screen
-    entities:
-      - light.lifx_screen_one
-      - light.lifx_office_screen
-      - light.lifx_screen_three 
-  - platform: group
-    name: LG Office
-    entities:
-      - light.lifx_office_screen
-      - light.lifx_office_wardrobe
-  
-  - platform: group
-    name: LG_internal Office All 
+    name: LG_internal Office All
     entities:
       - light.lifx_office_screen
       - light.lifx_office_wardrobe
       - light.office_ceiling
       - light.office_ceiling_nightlight
+
+  - platform: group
+    name: LG_internal Office Ceilig
+    entities:
+      - light.office_ceiling
+      - light.office_ceiling_nightlight
+
   - platform: group
     name: LG Office Ambient
-    entities:
+    entities:   
       - light.lifx_office_wardrobe
       - light.lifx_office_screen
 
