@@ -31,6 +31,14 @@ http:
   trusted_proxies:
     - 172.30.33.0/24 # Add the IP address of the proxy server
 
+zha:
+  zigpy_config:
+    ota:
+      ikea_provider: true                        # Auto update Trådfri devices
+      ledvance_provider: false                    # Auto update LEDVANCE devices
+      #otau_directory: /path/to/your/ota/folder  # Utilize .ota files to update everything else
+
+
 # Example configuration.yaml entry
 media_player:
   # Use the Python ADB implementation
@@ -71,8 +79,8 @@ influxdb:
       - sensor.time*
       - sensor.date_*
     entities:
-      - light.bedroom_ceiling
-      - light.bedroom_ceiling_nightlight
+      - sensor.influxdb_db_size
+
 
 
 ##Spotify

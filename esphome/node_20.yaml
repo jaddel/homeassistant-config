@@ -36,7 +36,7 @@ light:
     id: lightid
     on_turn_on:
       then:
-        - delay: 180s
+        - delay: 600s
         - light.turn_off: lightid
 
 binary_sensor:

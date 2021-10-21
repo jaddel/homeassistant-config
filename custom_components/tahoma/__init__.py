@@ -1,6 +1,7 @@
 """The Overkiz (by Somfy) integration."""
 import asyncio
 from collections import defaultdict
+from datetime import datetime, timedelta
 from enum import Enum
 import logging
 
@@ -11,6 +12,7 @@ from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.components.switch import DOMAIN as SWITCH
 from homeassistant.config_entries import SOURCE_IMPORT, ConfigEntry
 from homeassistant.const import CONF_EXCLUDE, CONF_PASSWORD, CONF_SOURCE, CONF_USERNAME
+from homeassistant.const import CONF_API_TOKEN, CONF_URL
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers import (
@@ -32,18 +34,21 @@ import voluptuous as vol
 
 from .const import (
     CONF_HUB,
+    CONF_UPDATE_INTERVAL,
     DEFAULT_HUB,
+    DEFAULT_UPDATE_INTERVAL,
     DOMAIN,
     IGNORED_OVERKIZ_DEVICES,
     OVERKIZ_DEVICE_TO_PLATFORM,
-    UPDATE_INTERVAL,
-    UPDATE_INTERVAL_ALL_ASSUMED_STATE,
 )
 from .coordinator import OverkizDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
 SERVICE_EXECUTE_COMMAND = "execute_command"
+
+HOMEKIT_SETUP_CODE = "homekit:SetupCode"
+HOMEKIT_STACK = "HomekitStack"
 
 CONFIG_SCHEMA = vol.Schema(
     {
@@ -122,16 +127,26 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up TaHoma from a config entry."""
     hass.data.setdefault(DOMAIN, {})
 
-    username = entry.data.get(CONF_USERNAME)
-    password = entry.data.get(CONF_PASSWORD)
+    username = entry.data.get(CONF_USERNAME, '')
+    password = entry.data.get(CONF_PASSWORD, '')
+    base_url = entry.data.get(CONF_URL, '')
+    api_token = entry.data.get(CONF_API_TOKEN, '')
+    hub = entry.data.get(CONF_HUB, DEFAULT_HUB)
     server = SUPPORTED_SERVERS[entry.data.get(CONF_HUB, DEFAULT_HUB)]
+
+    server = SUPPORTED_SERVERS[hub]
+    api_url = server.endpoint
+
+    if hub == "somfy_local":
+        api_url = base_url + server.endpoint
 
     session = async_get_clientsession(hass)
     client = TahomaClient(
         username,
         password,
         session=session,
-        api_url=server.endpoint,
+        api_url=api_url,
+        api_token=api_token
     )
 
     try:
@@ -141,9 +156,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             client.get_devices(),
             client.get_scenarios(),
             client.get_gateways(),
-            client.get_places(),
         ]
-        devices, scenarios, gateways, places = await asyncio.gather(*tasks)
+
+        if hub != "somfy_local":
+            tasks.append(client.get_places())
+            devices, scenarios, gateways, places = await asyncio.gather(*tasks)
+        else:
+            devices, scenarios, gateways = await asyncio.gather(*tasks)
+            places = None
+
     except BadCredentialsException as exception:
         raise ConfigEntryAuthFailed from exception
     except TooManyRequestsException as exception:
@@ -156,6 +177,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         _LOGGER.exception(exception)
         return False
 
+    update_interval = timedelta(
+        seconds=entry.options.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
+    )
+
     coordinator = OverkizDataUpdateCoordinator(
         hass,
         _LOGGER,
@@ -163,18 +188,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         client=client,
         devices=devices,
         places=places,
-        update_interval=UPDATE_INTERVAL,
+        update_interval=update_interval,
         config_entry_id=entry.entry_id,
     )
 
-    await coordinator.async_config_entry_first_refresh()
+    _LOGGER.debug(
+        "Initialized DataUpdateCoordinator with %s interval.", str(update_interval)
+    )
 
-    if coordinator.is_stateless:
-        _LOGGER.debug(
-            "All devices have assumed state. Update interval has been reduced to: %s",
-            UPDATE_INTERVAL_ALL_ASSUMED_STATE,
-        )
-        coordinator.update_interval = UPDATE_INTERVAL_ALL_ASSUMED_STATE
+    await coordinator.async_refresh()
 
     platforms = defaultdict(list)
     platforms[SCENE] = scenarios
@@ -182,6 +204,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data[DOMAIN][entry.entry_id] = {
         "platforms": platforms,
         "coordinator": coordinator,
+        "update_listener": entry.add_update_listener(update_listener),
     }
 
     # Map Overkiz device to Home Assistant platform
@@ -198,6 +221,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         ):
             log_device("Unsupported device detected", device)
 
+        if device.widget == HOMEKIT_STACK:
+            print_homekit_setup_code(device)
+
     supported_platforms = set(platforms.keys())
 
     # Sensor and Binary Sensor will be added dynamically, based on the device states
@@ -211,7 +237,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     device_registry = await dr.async_get_registry(hass)
 
     for gateway in gateways:
-        _LOGGER.debug("Added gateway (%s)", gateway)
+        _LOGGER.debug(
+            "Added gateway (%s - %s - %s)",
+            gateway.id,
+            gateway.type,
+            gateway.sub_type,
+        )
 
         gateway_model = (
             beautify_name(gateway.sub_type.name)
@@ -294,9 +325,30 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     )
 
     if unload_ok:
+        hass.data[DOMAIN][entry.entry_id]["update_listener"]()
         hass.data[DOMAIN].pop(entry.entry_id)
 
     return unload_ok
+
+
+async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
+    """Update when config_entry options update."""
+    if entry.options[CONF_UPDATE_INTERVAL]:
+        coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
+        new_update_interval = timedelta(seconds=entry.options[CONF_UPDATE_INTERVAL])
+        coordinator.update_interval = new_update_interval
+        coordinator.original_update_interval = new_update_interval
+
+        await coordinator.async_refresh()
+
+
+def print_homekit_setup_code(device: Device):
+    """Retrieve and print HomeKit Setup Code."""
+    if device.attributes:
+        homekit = device.attributes.get(HOMEKIT_SETUP_CODE)
+
+        if homekit:
+            _LOGGER.info("HomeKit support detected with setup code %s.", homekit.value)
 
 
 async def write_execution_history_to_log(client: TahomaClient):
@@ -304,7 +356,20 @@ async def write_execution_history_to_log(client: TahomaClient):
     history = await client.get_execution_history()
 
     for item in history:
-        _LOGGER.info(item)
+        timestamp = datetime.fromtimestamp(int(item.event_time) / 1000)
+
+        for command in item.commands:
+            date = timestamp.strftime("%Y-%m-%d %H:%M:%S")
+
+            _LOGGER.info(
+                "{timestamp}: {command} executed via {app} on {device}, with {parameters}.".format(
+                    command=command.command,
+                    timestamp=date,
+                    device=command.deviceurl,
+                    parameters=command.parameters,
+                    app=item.label,
+                )
+            )
 
 
 def beautify_name(name: str):
@@ -314,4 +379,11 @@ def beautify_name(name: str):
 
 def log_device(message: str, device: Device) -> None:
     """Log device information."""
-    _LOGGER.debug("%s (%s)", message, device)
+    _LOGGER.debug(
+        "%s (%s - %s - %s - %s)",
+        message,
+        device.controllable_name,
+        device.ui_class,
+        device.widget,
+        device.deviceurl,
+    )

@@ -1,0 +1,7 @@
+office_shade2:
+  module: controllerx
+  class: E1743StatelessCoverController
+  controller: 68:0a:e2:ff:fe:81:32:4d
+  integration: zha
+  cover_duration: 30s # The time duration the cover needs to full open or close.
+  cover: cover.office_shade_2

@@ -1,11 +1,11 @@
 ## Office
 
-office_shade:
-  module: controllerx
-  class: E1743CoverController
-  controller: 68:0a:e2:ff:fe:81:32:4d
-  integration: zha
-  cover: cover.office_shade
+#office_shade2:
+#  module: controllerx
+#  class: E1743CoverController
+#  controller: 68:0a:e2:ff:fe:81:32:4d
+#  integration: zha
+#  cover: cover.office_shade_2
 
 office_lights:
   module: controllerx
@@ -104,6 +104,7 @@ guest_wc_wall_switch_remote:
     "off": "toggle"
 
 ## Living Room
+
 living_room_shade:
   module: controllerx
   class: E1743CoverController
@@ -130,23 +131,32 @@ living_room_sofa_light:
   min_brightness: 4
   max_brightness: 255
 
-living_room_lights:
+#living_room_lights:
+#  module: controllerx
+#  class: E1810Controller
+#  controller: bc:33:ac:ff:fe:96:2a:bd 
+#  integration: zha
+#  light: "{{ states('input_select.living_room_lights') }}"
+#  # This is recommendable if the lights you want to loop through have different supported actions
+#  update_supported_features: true
+#  merge_mapping:
+#    press_257_13_0:
+#      - service: input_select.select_previous
+#        data:
+#          entity_id: input_select.living_room_lights
+#    press_256_13_0:
+#      - service: input_select.select_next
+#        data:
+#          entity_id: input_select.living_room_lights
+
+living_room_table_light:
   module: controllerx
   class: E1810Controller
   controller: bc:33:ac:ff:fe:96:2a:bd
   integration: zha
-  light: "{{ states('input_select.living_room_lights') }}"
-  # This is recommendable if the lights you want to loop through have different supported actions
-  update_supported_features: true
-  merge_mapping:
-    press_257_13_0:
-      - service: input_select.select_previous
-        data:
-          entity_id: input_select.living_room_lights
-    press_256_13_0:
-      - service: input_select.select_next
-        data:
-          entity_id: input_select.living_room_lights
+  light: light.lifx_living_room_table
+  min_brightness: 4
+  max_brightness: 255
 
 hall_wall_switch_remote:
   module: controllerx
@@ -159,7 +169,6 @@ hall_wall_switch_remote:
     "off": "toggle"
 
 ## Bedroom
-
 bedroom_max_bedsight_light:
   module: controllerx
   class: E1810Controller

@@ -9,7 +9,7 @@
       - light.lifx_office_sofa
       - light.lifx_office_screen
       # Covers
-      - cover.office_shade
+      - cover.office_shade_2
       # Vacuum
       - vacuum.office_roomba
       # Scripts
@@ -53,7 +53,7 @@
       - light.lifx_bedroom_display
       - light.bedroom_ambient
       # Covers
-      - cover.bedroom_shade
+      - cover.bedroom_shade_2
       
       - script.bedroom_privacy
       - light.bedroom_ceiling
@@ -90,6 +90,8 @@
       - light.lifx_living_room_table
       - light.living_room_ball
       # Covers
+    #  - cover.living_room_sofa_shade
+    #  - cover.living_room_table_shade
       - cover.living_room_shade_l
       - cover.living_room_shade_r
       # Vacuum

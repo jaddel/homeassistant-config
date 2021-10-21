@@ -36,4 +36,4 @@ light:
     warm_white_color_temperature: 500 mireds
     gamma_correct: 1.5
     default_transition_length: 0s
-    color_interlock: true
+    color_interlock: true     

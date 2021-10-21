@@ -1,8 +1,6 @@
 """Support for Overkiz sensors."""
 from __future__ import annotations
 
-from typing import Any
-
 from homeassistant.components import sensor
 from homeassistant.components.sensor import (
     STATE_CLASS_MEASUREMENT,
@@ -26,11 +24,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
-from .coordinator import OverkizDataUpdateCoordinator
-from .entity import OverkizDescriptiveEntity, OverkizEntity, OverkizSensorDescription
-
-HOMEKIT_SETUP_CODE = "homekit:SetupCode"
-HOMEKIT_STACK = "HomekitStack"
+from .entity import OverkizDescriptiveEntity, OverkizSensorDescription
 
 SENSOR_DESCRIPTIONS = [
     OverkizSensorDescription(
@@ -313,13 +307,6 @@ SENSOR_DESCRIPTIONS = [
         icon="mdi:content-save-cog",
         entity_registry_enabled_default=False,
     ),
-    OverkizSensorDescription(
-        key="core:DiscreteRSSILevelState",
-        name="Discrete RSSI Level",
-        entity_registry_enabled_default=False,
-        native_value=lambda value: str(value).capitalize(),
-        device_class=sensor.DEVICE_CLASS_SIGNAL_STRENGTH,
-    ),
 ]
 
 
@@ -349,14 +336,6 @@ async def async_setup_entry(
                     )
                 )
 
-        if device.widget == HOMEKIT_STACK:
-            entities.append(
-                OverkizHomeKitSetupCodeSensor(
-                    device.deviceurl,
-                    coordinator,
-                )
-            )
-
     async_add_entities(entities)
 
 
@@ -376,27 +355,3 @@ class OverkizStateSensor(OverkizDescriptiveEntity, SensorEntity):
             return self.entity_description.native_value(state.value)
 
         return state.value
-
-
-class OverkizHomeKitSetupCodeSensor(OverkizEntity, SensorEntity):
-    """Representation of an Overkiz HomeKit Setup Code."""
-
-    def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
-        """Initialize the device."""
-        super().__init__(device_url, coordinator)
-        self._attr_name = "HomeKit Setup Code"
-        self._attr_icon = "mdi:shield-home"
-
-    @property
-    def state(self):
-        """Return the value of the sensor."""
-        return self.device.attributes.get(HOMEKIT_SETUP_CODE).value
-
-    @property
-    def device_info(self) -> dict[str, Any]:
-        """Return device registry information for this entity."""
-        # By default this sensor will be listed at a virtual HomekitStack device,
-        # but it makes more sense to show this at the gateway device in the entity registry.
-        return {
-            "identifiers": {(DOMAIN, self.executor.get_gateway_id())},
-        }

@@ -3,9 +3,12 @@
   description: ''
   trigger:
   - platform: state
-    entity_id: binary_sensor.lumi_lumi_sensor_magnet_on_off
+    entity_id: binary_sensor.post_box
     from: 'on'
-  condition: []
+  condition:
+  - condition: template
+    value_template: '{{ ( as_timestamp(now()) - as_timestamp(state_attr(''automation.mail_notification'',
+      ''last_triggered'')) |int(0) ) > 30 }}'
   action:
   - service: notify.mobile_app_whiterabbit
     data:
@@ -13,17 +16,6 @@
   - service: notify.mobile_app_freyas_iphone
     data:
       message: The mail is here! :)
-  - service: automation.turn_off
-    target:
-      entity_id: automation.mail_notification
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 30
-      milliseconds: 0
-  - service: automation.turn_on
-    target:
-      entity_id: automation.mail_notification
   mode: single
 - id: '1615494969540'
   alias: Office Wall Switch Single Click
@@ -92,10 +84,6 @@
   trigger:
   - platform: state
     entity_id: binary_sensor.kitchen_someone_is_cooking
-    from:
-    - 'on'
-    - 'off'
-    to: on,off
   condition: []
   action:
   - choose:
@@ -253,7 +241,7 @@
     default: []
   mode: single
 - id: '1617195179216'
-  alias: Cleaning Automation
+  alias: Roomba Cleaning Automation
   description: ''
   trigger:
   - platform: state
@@ -273,9 +261,13 @@
     domain: vacuum
     entity_id: vacuum.living_room_roomba
     type: clean
+  - device_id: 7a6ed889016f996186edb44817587c63
+    domain: vacuum
+    entity_id: vacuum.office_roomba
+    type: clean
   - service: notify.awsome_people
     data:
-      message: 'Living Room Roomba started cleaning! '
+      message: 'Living Room & Office Roomba started cleaning! '
   mode: single
 - id: '1617195394029'
   alias: 'Roomba Cleaned Today Reset '
@@ -674,4 +666,112 @@
   - service: notify.awsome_people
     data:
       message: Main Door Open
+  mode: single
+- id: '1634382110924'
+  alias: Office Cover
+  description: ''
+  trigger:
+  - device_id: 5f8bcda84a5553705c9f7e0cc619848c
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: turn_on
+    id: 'on'
+  - device_id: 5f8bcda84a5553705c9f7e0cc619848c
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: turn_off
+    id: 'off'
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.cover_helper
+        state: 'on'
+      sequence:
+      - service: cover.stop_cover
+        target:
+          entity_id: cover.office_shade_2
+      - service: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.cover_helper
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.cover_helper
+        state: 'off'
+      sequence:
+      - choose:
+        - conditions:
+          - condition: trigger
+            id: 'on'
+          sequence:
+          - service: cover.open_cover
+            target:
+              entity_id: cover.office_shade_2
+          - service: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.cover_helper
+        - conditions:
+          - condition: trigger
+            id: 'off'
+          sequence:
+          - service: cover.close_cover
+            target:
+              entity_id: cover.office_shade_2
+          - service: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.cover_helper
+        default: []
+    default: []
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 30
+      milliseconds: 0
+  - service: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.cover_helper
+  mode: restart
+- id: '1634401854050'
+  alias: Office Ceiling Light brightness entity switcher
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: light.office_ceiling
+    id: night
+    below: '10'
+    attribute: brightness
+  - platform: numeric_state
+    entity_id: light.office_ceiling_nightlight
+    id: day
+    above: '245'
+    attribute: brightness
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: numeric_state
+        entity_id: light.office_ceiling
+        attribute: brightness
+        below: '10'
+      sequence:
+      - service: input_select.select_option
+        target:
+          entity_id: input_select.office_lights
+        data:
+          option: light.office_ceiling_nightlight
+    - conditions:
+      - condition: numeric_state
+        entity_id: light.office_ceiling_nightlight
+        above: '99'
+        attribute: brightness
+      sequence:
+      - service: input_select.select_option
+        target:
+          entity_id: input_select.office_lights
+        data:
+          option: light.office_ceiling
+    default: []
   mode: single

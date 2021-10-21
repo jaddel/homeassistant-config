@@ -20,12 +20,12 @@ output:
   - platform: ledc
     pin: GPIO19
     id: output_warm
-    frequency: 4882Hz
+    frequency: 9765Hz
 
   - platform: ledc
     pin: GPIO21
     id: output_cold
-    frequency: 4882Hz
+    frequency: 9765Hz
 
   - platform: ledc
     pin: GPIO23

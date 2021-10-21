@@ -24,6 +24,7 @@
   - platform: dwd_weather_warnings  
     region_name: 111000000 
 
+# System Monitor
 
   - platform: systemmonitor
     resources:
@@ -45,3 +46,20 @@
     - type: processor_temperature
     - type: last_boot
 
+# Influx DB Database Size
+
+  - platform: influxdb
+    host: a0d7b954-influxdb
+    port: 8086
+    username: !secret influxdb_user
+    password: !secret influxdb_password
+    scan_interval: 3600
+    queries:
+      - name: InfluxDB DB size
+        unit_of_measurement: MB
+        value_template: "{{ (value|float / 1024 /1024)|round(1) }}"
+        group_function: sum
+        measurement: '"monitor"."shard"'
+        database: _internal
+        where: "time > now() - 10s"
+        field: diskBytes

@@ -8,8 +8,10 @@ from aiohttp import ClientError
 from homeassistant import config_entries
 from homeassistant.components.dhcp import HOSTNAME
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
+from homeassistant.const import CONF_URL, CONF_API_TOKEN
+from homeassistant.core import callback
 from homeassistant.data_entry_flow import AbortFlow, FlowResult
-from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import config_validation as cv, device_registry as dr
 from pyhoma.client import TahomaClient
 from pyhoma.const import SUPPORTED_SERVERS
 from pyhoma.exceptions import (
@@ -17,10 +19,15 @@ from pyhoma.exceptions import (
     MaintenanceException,
     TooManyRequestsException,
 )
-from pyhoma.models import obfuscate_id
 import voluptuous as vol
 
-from .const import CONF_HUB, DEFAULT_HUB
+from .const import (
+    CONF_HUB,
+    CONF_UPDATE_INTERVAL,
+    DEFAULT_HUB,
+    DEFAULT_UPDATE_INTERVAL,
+    MIN_UPDATE_INTERVAL,
+)
 from .const import DOMAIN  # pylint: disable=unused-import
 
 _LOGGER = logging.getLogger(__name__)
@@ -31,20 +38,34 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     VERSION = 2
 
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry):
+        """Handle the flow."""
+        return OptionsFlowHandler(config_entry)
+
     def __init__(self) -> None:
         """Start the Overkiz config flow."""
         self._reauth_entry = None
-        self._default_username = None
+        self._default_username = ''
+        self._default_password = ''
         self._default_hub = DEFAULT_HUB
 
     async def async_validate_input(self, user_input: dict[str, Any]) -> FlowResult:
         """Validate user credentials."""
-        username = user_input.get(CONF_USERNAME)
-        password = user_input.get(CONF_PASSWORD)
+        username = user_input.get(CONF_USERNAME, '')
+        password = user_input.get(CONF_PASSWORD, '')
+        base_url = user_input.get(CONF_URL, '')
+        api_token = user_input.get(CONF_API_TOKEN, '')
+        hub = user_input.get(CONF_HUB, DEFAULT_HUB)
 
-        server = SUPPORTED_SERVERS[user_input.get(CONF_HUB, DEFAULT_HUB)]
+        server = SUPPORTED_SERVERS[hub]
+        api_url = server.endpoint
 
-        async with TahomaClient(username, password, api_url=server.endpoint) as client:
+        if hub == "somfy_local":
+            api_url = base_url + server.endpoint
+        
+        async with TahomaClient(username, password, api_url=api_url, api_token=api_token) as client:
             await client.login()
 
             # Set first gateway as unique id
@@ -101,10 +122,12 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=vol.Schema(
                 {
                     vol.Required(CONF_USERNAME, default=self._default_username): str,
-                    vol.Required(CONF_PASSWORD): str,
+                    vol.Required(CONF_PASSWORD, default=self._default_password): str,
                     vol.Required(CONF_HUB, default=self._default_hub): vol.In(
                         {key: hub.name for key, hub in SUPPORTED_SERVERS.items()}
                     ),
+                    vol.Required(CONF_URL): str,
+                    vol.Required(CONF_API_TOKEN): str,
                 }
             ),
             errors=errors,
@@ -150,10 +173,10 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         hostname = discovery_info[HOSTNAME]
         gateway_id = hostname[8:22]
 
-        _LOGGER.debug("DHCP discovery detected gateway %s", obfuscate_id(gateway_id))
+        _LOGGER.debug("DHCP discovery detected gateway %s", gateway_id)
 
         if self._gateway_already_configured(gateway_id):
-            _LOGGER.debug("Gateway %s is already configured", obfuscate_id(gateway_id))
+            _LOGGER.debug("Gateway %s is already configured", gateway_id)
             return self.async_abort(reason="already_configured")
 
         return await self.async_step_user()
@@ -165,4 +188,35 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             device_registry.async_get_device(
                 identifiers={(DOMAIN, gateway_id)}, connections=set()
             )
+        )
+
+
+class OptionsFlowHandler(config_entries.OptionsFlow):
+    """Handle a option flow for Somfy TaHoma."""
+
+    def __init__(self, config_entry):
+        """Initialize options flow."""
+        self.config_entry = config_entry
+
+    async def async_step_init(self, user_input=None):
+        """Manage the Somfy TaHoma options."""
+        return await self.async_step_update_interval()
+
+    async def async_step_update_interval(self, user_input=None):
+        """Manage the options regarding interval updates."""
+        if user_input is not None:
+            return self.async_create_entry(title="", data=user_input)
+
+        return self.async_show_form(
+            step_id="update_interval",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(
+                        CONF_UPDATE_INTERVAL,
+                        default=self.config_entry.options.get(
+                            CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL
+                        ),
+                    ): vol.All(cv.positive_int, vol.Clamp(min=MIN_UPDATE_INTERVAL))
+                }
+            ),
         )

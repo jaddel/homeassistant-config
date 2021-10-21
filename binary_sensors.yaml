@@ -56,8 +56,8 @@
       friendly_name: Someone Home
       device_class: presence
       value_template: >-
-        {{ states.person |selectattr('state', 'eq', 
-        'home')|list|length > 0 }}
+        {{ (states.person |selectattr('state', 'eq', 'home')|list|length > 0) or 
+        (is_state('input_boolean.guest_at_home', 'on')) }}
         
 ## Max PC in use
 - platform: template

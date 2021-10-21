@@ -2,6 +2,7 @@
 
 ## Automaitons
 ### ToDo's
+- Per room precense detection --> Auto Lights off. 
 - Global input boolean per room as motion light blocking entity.
 - Global input boolean per room on/off all automations.
 - Global input boolean per room on/off adaptive light.
@@ -39,7 +40,6 @@
     - Input number timeout
 #### Shower Occupancy
 - Humidity sensor --> binary sensor shower occupancy
-- Temp sensor --> binary sensor shower occupancy?
 - Add darin sensor to detect shower occupancy.
 
 ### Bedroom
