@@ -8,7 +8,7 @@ from homeassistant.components.switch import (
     SwitchEntity,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import STATE_OFF, STATE_ON
+from homeassistant.const import ENTITY_CATEGORY_CONFIG, STATE_OFF, STATE_ON
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
@@ -42,13 +42,13 @@ async def async_setup_entry(
     coordinator = data["coordinator"]
 
     entities = [
-        OverkizSwitch(device.deviceurl, coordinator)
+        OverkizSwitch(device.device_url, coordinator)
         for device in data["platforms"][SWITCH]
     ]
 
     entities.extend(
         [
-            OverkizLowSpeedCoverSwitch(device.deviceurl, coordinator)
+            OverkizLowSpeedCoverSwitch(device.device_url, coordinator)
             for device in data["platforms"][COVER]
             if COMMAND_SET_CLOSURE_AND_LINEAR_SPEED in device.definition.commands
         ]
@@ -140,6 +140,7 @@ class OverkizLowSpeedCoverSwitch(OverkizEntity, SwitchEntity, RestoreEntity):
         super().__init__(device_url, coordinator)
         self._is_on = False
         self._attr_name = f"{super().name} low speed"
+        self._attr_entity_category = ENTITY_CATEGORY_CONFIG
 
     async def async_added_to_hass(self):
         """Run when entity about to be added."""

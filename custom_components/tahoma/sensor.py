@@ -1,6 +1,8 @@
 """Support for Overkiz sensors."""
 from __future__ import annotations
 
+from typing import Any
+
 from homeassistant.components import sensor
 from homeassistant.components.sensor import (
     STATE_CLASS_MEASUREMENT,
@@ -11,6 +13,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONCENTRATION_PARTS_PER_MILLION,
     ENERGY_WATT_HOUR,
+    ENTITY_CATEGORY_DIAGNOSTIC,
     LIGHT_LUX,
     PERCENTAGE,
     POWER_WATT,
@@ -24,7 +27,11 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
-from .entity import OverkizDescriptiveEntity, OverkizSensorDescription
+from .coordinator import OverkizDataUpdateCoordinator
+from .entity import OverkizDescriptiveEntity, OverkizEntity, OverkizSensorDescription
+
+HOMEKIT_SETUP_CODE = "homekit:SetupCode"
+HOMEKIT_STACK = "HomekitStack"
 
 SENSOR_DESCRIPTIONS = [
     OverkizSensorDescription(
@@ -33,12 +40,14 @@ SENSOR_DESCRIPTIONS = [
         native_unit_of_measurement=PERCENTAGE,
         device_class=sensor.DEVICE_CLASS_BATTERY,
         state_class=STATE_CLASS_MEASUREMENT,
+        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
     ),
     OverkizSensorDescription(
         key="core:BatteryState",
         name="Battery",
         device_class=sensor.DEVICE_CLASS_BATTERY,
         native_value=lambda value: str(value).capitalize(),
+        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
     ),
     OverkizSensorDescription(
         key="core:RSSILevelState",
@@ -47,6 +56,7 @@ SENSOR_DESCRIPTIONS = [
         device_class=sensor.DEVICE_CLASS_SIGNAL_STRENGTH,
         state_class=STATE_CLASS_MEASUREMENT,
         native_value=lambda value: round(value),
+        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
     ),
     OverkizSensorDescription(
         key="core:ExpectedNumberOfShowerState",
@@ -302,10 +312,21 @@ SENSOR_DESCRIPTIONS = [
         entity_registry_enabled_default=False,
     ),
     OverkizSensorDescription(
-        key="core:Memorized1PositionState",
-        name="My Position",
-        icon="mdi:content-save-cog",
+        key="core:DiscreteRSSILevelState",
+        name="Discrete RSSI Level",
         entity_registry_enabled_default=False,
+        native_value=lambda value: str(value).capitalize(),
+        device_class=sensor.DEVICE_CLASS_SIGNAL_STRENGTH,
+        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+    ),
+    # DomesticHotWaterProduction/WaterHeatingSystem
+    OverkizSensorDescription(
+        key="io:HeatPumpOperatingTimeState",
+        name="Heat Pump Operating Time",
+    ),
+    OverkizSensorDescription(
+        key="io:ElectricBoosterOperatingTimeState",
+        name="Electric Booster Operating Time",
     ),
 ]
 
@@ -330,11 +351,19 @@ async def async_setup_entry(
             if description := key_supported_states.get(state.qualified_name):
                 entities.append(
                     OverkizStateSensor(
-                        device.deviceurl,
+                        device.device_url,
                         coordinator,
                         description,
                     )
                 )
+
+        if device.widget == HOMEKIT_STACK:
+            entities.append(
+                OverkizHomeKitSetupCodeSensor(
+                    device.device_url,
+                    coordinator,
+                )
+            )
 
     async_add_entities(entities)
 
@@ -355,3 +384,28 @@ class OverkizStateSensor(OverkizDescriptiveEntity, SensorEntity):
             return self.entity_description.native_value(state.value)
 
         return state.value
+
+
+class OverkizHomeKitSetupCodeSensor(OverkizEntity, SensorEntity):
+    """Representation of an Overkiz HomeKit Setup Code."""
+
+    def __init__(self, device_url: str, coordinator: OverkizDataUpdateCoordinator):
+        """Initialize the device."""
+        super().__init__(device_url, coordinator)
+        self._attr_name = "HomeKit Setup Code"
+        self._attr_icon = "mdi:shield-home"
+        self._attr_entity_category = ENTITY_CATEGORY_DIAGNOSTIC
+
+    @property
+    def state(self):
+        """Return the value of the sensor."""
+        return self.device.attributes.get(HOMEKIT_SETUP_CODE).value
+
+    @property
+    def device_info(self) -> dict[str, Any]:
+        """Return device registry information for this entity."""
+        # By default this sensor will be listed at a virtual HomekitStack device,
+        # but it makes more sense to show this at the gateway device in the entity registry.
+        return {
+            "identifiers": {(DOMAIN, self.executor.get_gateway_id())},
+        }

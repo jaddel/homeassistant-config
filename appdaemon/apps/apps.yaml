@@ -1,11 +1,12 @@
 ## Office
 
-#office_shade2:
-#  module: controllerx
-#  class: E1743CoverController
-#  controller: 68:0a:e2:ff:fe:81:32:4d
-#  integration: zha
-#  cover: cover.office_shade_2
+office_shade:
+  module: controllerx
+  class: E1743CoverController
+  controller: 68:0a:e2:ff:fe:81:32:4d
+  integration: zha
+  cover_duration: 30
+  cover: cover.office_shade
 
 office_lights:
   module: controllerx
@@ -34,6 +35,9 @@ office_wall_switch_1:
     {% if is_state('light.lg_internal_office_ceilig', 'on') %}
     {{"light.lg_internal_office_all"}}
     {% else %}{{"light.lg_office_ambient"}}{% endif %}
+  previous_state:
+    "on": "off"
+    "off": "on"
   mapping:
     "on": "toggle"
     "off": "toggle"
@@ -44,6 +48,9 @@ office_wall_switch_2:
   integration: state 
   controller: binary_sensor.office_wall_switch_2
   light: light.office_ceiling
+  previous_state:
+    "on": "off"
+    "off": "on"
   mapping:
     "on": "toggle"
     "off": "toggle"
@@ -53,10 +60,20 @@ office_wall_switch_3:
   class: LightController
   integration: state 
   controller: binary_sensor.office_wall_switch_3
-  light: light.office_ceiling_nightlight
+  light: light.lg_main
+  previous_state:
+    "on": "off"
+    "off": "on"
   mapping:
     "on": "toggle"
     "off": "toggle"
+ 
+office_desk:
+  module: controllerx
+  class: E1743SwitchController
+  controller: ec:1b:bd:ff:fe:97:23:43
+  integration: zha
+  switch: switch.office_desk_peripherals
 
 # Kitchen
 kitchen_cooking_fan_slide_remote:
@@ -69,12 +86,28 @@ kitchen_cooking_fan_slide_remote:
     "on": "on"
     "off": "off"
 
-kitchen_wall_switch_remote: #Living Room
+sheely_i3_kitchen_wall_switch_remote1: #Living Room
   module: controllerx
   class: LightController
   integration: state
   controller: binary_sensor.bottom_mutual_shellyi3_remote
   light: light.lifx_kitchen_ceiling
+  previous_state:
+    "on": "off"
+    "off": "on"
+  mapping:
+    "on": "toggle"
+    "off": "toggle"
+
+shelly25_kitchen_wall_switch_remote: #Living Room
+  module: controllerx
+  class: LightController
+  integration: state
+  controller: binary_sensor.kitchen_spot
+  light: light.lg_kitchen_counter
+  previous_state:
+    "on": "off"
+    "off": "on"
   mapping:
     "on": "toggle"
     "off": "toggle"
@@ -87,6 +120,9 @@ bathroom_wall_switch_remote:
   integration: state
   controller: binary_sensor.bathroom_remote
   light: light.lifx_bathroom_ceiling
+  previous_state:
+    "on": "off"
+    "off": "on"
   mapping:
     "on": "toggle"
     "off": "toggle"
@@ -99,6 +135,9 @@ guest_wc_wall_switch_remote:
   integration: state
   controller: binary_sensor.guest_wc_shelly_remote
   light: light.lifx_guest_wc_ceiling
+  previous_state:
+    "on": "off"
+    "off": "on"
   mapping:
     "on": "toggle"
     "off": "toggle"
@@ -110,6 +149,7 @@ living_room_shade:
   class: E1743CoverController
   controller: 58:8e:81:ff:fe:30:4a:ff
   integration: zha
+  cover_duration: 30
   cover: cover.living_room_shades
 
 living_room_wall_switch_remote:
@@ -118,6 +158,9 @@ living_room_wall_switch_remote:
   integration: state
   controller: binary_sensor.mid_mutual_shellyi3_remote
   light: light.lg_living_room
+  previous_state:
+    "on": "off"
+    "off": "on"
   mapping:
     "on": "toggle"
     "off": "toggle"
@@ -154,7 +197,12 @@ living_room_table_light:
   class: E1810Controller
   controller: bc:33:ac:ff:fe:96:2a:bd
   integration: zha
-  light: light.lifx_living_room_table
+  light: 
+    name: light.lifx_living_room_table
+    color_mode: color_temp
+  color_wheel:
+    color_temp_wheel
+  smooth_power_on: true
   min_brightness: 4
   max_brightness: 255
 
@@ -164,6 +212,9 @@ hall_wall_switch_remote:
   integration: state
   controller: binary_sensor.top_mutual_shellyi3_remote
   light: light.lg_hall
+  previous_state:
+    "on": "off"
+    "off": "on"
   mapping:
     "on": "toggle"
     "off": "toggle"
@@ -184,7 +235,7 @@ bedroom_freya_bedside_light:
   class: E1810Controller
   controller: bc:33:ac:ff:fe:8d:18:35
   integration: zha
-  light: light.lifx_bedroom_bed
+  light: light.bedroom_freya_bedside
 
 bedroom_wall_switch_1:
   module: controllerx
@@ -194,7 +245,10 @@ bedroom_wall_switch_1:
   light: >- 
     {% if is_state('light.lg_internal_bedroom', 'on') %}
     {{"light.lg_internal_bedroom_all"}}
-    {% else %}{{"light.bedroom_ambient"}}{% endif %}
+    {% else %}{{"light.lg_bedroom_ambient"}}{% endif %}
+  previous_state:
+    "on": "off"
+    "off": "on"
   mapping:
     "on": "toggle"
     "off": "toggle"
@@ -205,25 +259,32 @@ bedroom_wall_switch_2:
   integration: state
   controller: binary_sensor.bedroom_wall_switch_2
   light: light.bedroom_ceiling
+  previous_state:
+    "on": "off"
+    "off": "on"
   mapping:
     "on": "toggle"
     "off": "toggle"
     
-bedroom_wall_switch_3:
-  module: controllerx
-  class: LightController
-  integration: state
-  controller: binary_sensor.bedroom_wall_switch_3
-  light: light.bedroom_ceiling_nightlight
-  mapping:
-    "on": "toggle"
-    "off": "toggle"
+#bedroom_wall_switch_3:
+#  module: controllerx
+#  class: LightController
+#  integration: state
+#  controller: binary_sensor.bedroom_wall_switch_3
+#  light: light.bedroom_ceiling_nightlight
+#  previous_state:
+#    "on": "off"
+#    "off": "on"
+#  mapping:
+#    "on": "toggle"
+#    "off": "toggle"
 
 bedroom_shade:
   module: controllerx
   class: E1743CoverController
   controller: 58:8e:81:ff:fe:17:47:41
   integration: zha
+  cover_duration: 30
   cover: cover.bedroom_shade
 
 bedroom_lights:

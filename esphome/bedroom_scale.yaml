@@ -1,0 +1,48 @@
+# Bedroom Scale
+
+# Variables
+substitutions:
+  device_name:    !secret node_22_device_name
+  friendly_name:  !secret node_22_friendly_name
+  hardware_id:    !secret node_22_hardware_id
+  static_ip:      !secret node_22_static_ip
+  ssid:           !secret not_ssid
+  ssid_pw:        !secret not_password
+  ap_pw:          !secret ap_password 
+  gateway:        !secret not_gateway
+  subnet:         !secret not_subnet
+  ntp:            !secret ntp
+
+
+esphome:
+  name: "${device_name}"
+  platform: ESP8266
+  board: d1_mini_lite
+  build_path: "./.build/${device_name}/"
+
+wifi:
+  <<: !include includes/network_manual_ip.yaml
+
+packages:
+  wifi:   !include includes/network.yaml
+
+
+sensor:
+  - platform: hx711
+    name: "HX711 Value"
+    dout_pin: D0
+    clk_pin: D1
+    gain: 128
+    update_interval: 1s
+    accuracy_decimals: 2
+    # ... Other HX711 options
+    filters:
+    - delta: 0.1
+    - calibrate_linear:
+        - 243124 -> 0.3
+        - 177707 -> 1
+    - sliding_window_moving_average:
+        window_size: 3
+        send_every: 2
+
+    unit_of_measurement: kg

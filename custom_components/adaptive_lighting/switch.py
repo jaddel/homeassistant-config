@@ -86,9 +86,85 @@ from homeassistant.util import slugify
 from homeassistant.util.color import (
     color_RGB_to_xy,
     color_temperature_kelvin_to_mired,
-    color_temperature_to_rgb,
+    #color_temperature_to_rgb,
+    color_RGB_to_hsv,
+    color_hsv_to_RGB,
     color_xy_to_hs,
 )
+
+###################################################################################
+# From HA Libs
+def color_temperature_to_rgb(
+    color_temperature_kelvin: float,
+) -> tuple[float, float, float]:
+    """
+    Return an RGB color from a color temperature in Kelvin.
+    This is a rough approximation based on the formula provided by T. Helland
+    http://www.tannerhelland.com/4435/convert-temperature-rgb-algorithm-code/
+    """
+    # range check
+    if color_temperature_kelvin < 1000:
+        color_temperature_kelvin = 1000
+    elif color_temperature_kelvin > 40000:
+        color_temperature_kelvin = 40000
+
+    tmp_internal = color_temperature_kelvin / 100.0
+
+    red = _get_red(tmp_internal)
+
+    green = _get_green(tmp_internal)
+
+    blue = _get_blue(tmp_internal)
+
+    rgb_value = (red, green, blue)
+    hsv_value = color_RGB_to_hsv(*rgb_value)
+    h = 1.5   # Farbraum
+    s = 1    # Sättigung
+    res_mod = (hsv_value[0]*h, hsv_value[1]*s, hsv_value[2])
+    rgb_res = color_hsv_to_RGB(*res_mod)
+
+    return rgb_res[0], rgb_res[1], rgb_res[2] #red, green, blue
+
+
+def _clamp(color_component: float, minimum: float = 0, maximum: float = 255) -> float:
+    """
+    Clamp the given color component value between the given min and max values.
+    The range defined by the minimum and maximum values is inclusive, i.e. given a
+    color_component of 0 and a minimum of 10, the returned value is 10.
+    """
+    color_component_out = max(color_component, minimum)
+    return min(color_component_out, maximum)
+
+
+def _get_red(temperature: float) -> float:
+    """Get the red component of the temperature in RGB space."""
+    if temperature <= 66:
+        return 255
+    tmp_red = 329.698727446 * math.pow(temperature - 60, -0.1332047592)
+    return _clamp(tmp_red)
+
+
+def _get_green(temperature: float) -> float:
+    """Get the green component of the given color temp in RGB space."""
+    if temperature <= 66:
+        green = 99.4708025861 * math.log(temperature) - 161.1195681661
+    else:
+        green = 288.1221695283 * math.pow(temperature - 60, -0.0755148492)
+    return _clamp(green)
+
+
+def _get_blue(temperature: float) -> float:
+    """Get the blue component of the given color temperature in RGB space."""
+    if temperature >= 66:
+        return 255
+    if temperature <= 19:
+        return 0
+    blue = 138.5177312231 * math.log(temperature - 10) - 305.0447927307
+    return _clamp(blue)
+
+
+#####################################################################################
+
 import homeassistant.util.dt as dt_util
 
 from .const import (

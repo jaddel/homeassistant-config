@@ -1,0 +1,115 @@
+# Office PC
+
+# Variables
+substitutions:
+  device_name:    !secret node_13_device_name
+  friendly_name:  !secret node_13_friendly_name
+  hardware_id:    !secret node_13_hardware_id
+  static_ip:      !secret node_13_static_ip
+  ssid:           !secret not_ssid
+  ssid_pw:        !secret not_password
+  ap_pw:          !secret ap_password 
+  gateway:        !secret not_gateway
+  subnet:         !secret not_subnet
+  ntp:            !secret ntp
+
+wifi:
+  <<: !include includes/network_manual_ip.yaml
+
+packages:
+  wifi: !include includes/network.yaml
+  time: !include includes/sensors/time.yaml
+  kwh: !include includes/sensors/total_daily_energy.yaml
+
+esphome:
+  name: "${device_name}"
+  build_path: "./.build/${device_name}/"
+  platform: ESP8266
+  board: esp8285
+
+output:
+  - platform: gpio
+    pin: GPIO2
+    id: led_blue
+    inverted: true
+  - platform: gpio
+    pin: GPIO00
+    id: led_red
+    inverted: true
+    
+switch:
+  - platform: gpio
+    pin: GPIO15
+    name: "${friendly_name}"
+    restore_mode: ALWAYS_ON
+    id: relay
+
+# Light is used instead of status light to keep it off.
+light:
+  - platform: binary
+    name: "${friendly_name} Led Blue"
+    output: led_blue
+    restore_mode: ALWAYS_OFF
+    internal: true
+  - platform: binary
+    name: "${friendly_name} Led Red"
+    output: led_red
+    internal: true
+    restore_mode: ALWAYS_OFF
+
+binary_sensor:
+  - platform: gpio
+    pin: GPIO13
+    id: button
+    internal: true
+    on_press:
+      then:
+        - switch.toggle: relay
+
+sensor:
+  - platform: hlw8012
+    update_interval: 15s
+    change_mode_every: 3
+    sel_pin:
+      number: GPIO12
+      inverted: True
+    cf_pin: GPIO05
+    cf1_pin: GPIO04
+    power:
+      device_class: "energy"
+      state_class: "measurement"
+      name: "${friendly_name} Power"
+      unit_of_measurement: W
+      id: device_power
+      accuracy_decimals: 1
+      filters:
+        - calibrate_linear:
+            - 0 -> 0.6
+            - 38.892 -> 6.0
+            - 66.2 -> 9.6
+            - 59.579 -> 8.8
+            - 3882.165 -> 512.0
+            - 7605.047 -> 1003
+            - 12075 -> 1580
+        - sliding_window_moving_average:
+            window_size: 15
+            send_every: 15
+    current:
+      device_class: "current"
+      state_class: "measurement"
+      name: "${friendly_name} Current"
+      unit_of_measurement: A
+      accuracy_decimals: 1
+      filters:
+      internal: true
+    voltage:
+      device_class: "voltage"
+      state_class: "measurement"
+      name: "${friendly_name} Voltage"
+      unit_of_measurement: V
+      accuracy_decimals: 1
+      filters:
+        - calibrate_linear:
+            - 0.0 -> 0.0
+            - 756.512 -> 238.0
+      internal: true

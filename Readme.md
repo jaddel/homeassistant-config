@@ -25,6 +25,9 @@
     - Moderate adaptive brightness & color settings.
 - Bathroom: Find a good solution to detect shower occupancy. 
     - Trend sensor -> Humiditiy / Temp 
+- Vacuum wait at bin after 2. run. 
+- Vacuum Siri / clean the kitschen 
+- Creat washings per week counter. / track detergents consumption. 
 ### Needs clarification
 - Adaptive lightning: possible to set variables for brightness settings?
 

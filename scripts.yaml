@@ -1,40 +1,3 @@
-shades_open:
-  alias: Shades Open
-  sequence:
-  - service: cover.open_cover
-    data: {}
-    target:
-      entity_id:
-      - cover.bedroom_shade
-      - cover.living_room_shade_l
-      - cover.living_room_shade_r
-      - cover.office_shade
-  mode: single
-shades_close:
-  alias: Shades Close
-  sequence:
-  - service: cover.close_cover
-    data: {}
-    target:
-      entity_id:
-      - cover.bedroom_shade
-      - cover.living_room_shade_l
-      - cover.living_room_shade_r
-      - cover.office_shade
-  mode: single
-homekit_good_night:
-  alias: HomeKit Good Night
-  sequence:
-  - service: light.turn_off
-    target:
-      entity_id:
-      - light.lg_hall
-      - light.lg_living_room
-      - light.lg_office_all
-      - light.bedroom_bed_freya
-      - light.bedroom_bed_max
-      - light.bedroom_wardrobe
-  mode: single
 home_assistent_restart_appdameon:
   alias: Home Assistent Restart AppDameon
   sequence:
@@ -47,19 +10,6 @@ home_assistent_restart_core:
   sequence:
   - service: homeassistant.restart
   mode: single
-homekit_good_morning:
-  alias: Homekit Good Morning
-  sequence:
-  - service: cover.set_cover_position
-    target:
-      entity_id:
-      - cover.bedroom_shade
-      - cover.living_room_shade_table
-      - cover.living_room_shade_tv
-      - cover.office_shade
-    data:
-      position: 70
-  mode: single
 office_desk_main_fail_safe:
   alias: Office Desk Main Fail Safe
   sequence:
@@ -68,60 +18,40 @@ office_desk_main_fail_safe:
     entity_id: switch.main_office_desk
     domain: switch
   mode: single
-notification_tester:
-  alias: Notification Tester
-  sequence:
-  - service: notify.awsome_people
-    data:
-      message: 'I have us lieb. :) '
-  - service: notify.mobile_app_whiterabbit
-    data:
-      message: test
-  mode: single
-main_update_periodic_lights:
-  sequence:
-  - event: office_update_lights
-    event_data: {}
-  mode: single
-  alias: Main Update Periodic Lights
 bedroom_privacy:
   alias: Bedroom Privacy
   sequence:
-  - device_id: 63b9ded74bb862642883def47ac47612
-    domain: cover
-    entity_id: cover.bedroom_shade
-    type: set_position
-    position: 30
+  - service: cover.set_cover_position
+    target:
+      area_id: bedroom
+    data:
+      position: 35
   mode: single
 living_room_privacy:
   alias: Living Room Privacy
   sequence:
   - service: cover.set_cover_position
+    data:
+      position: 35
     target:
       area_id: living_room
-    data:
-      position: 40
   mode: single
 clean_the_kitchen:
   sequence:
-  - service: vacuum.send_command
+  - service: mqtt.publish
     data:
-      params:
-        zone_ids:
-        - kitchen
-      command: zoned_cleanup
-    target:
-      entity_id: vacuum.living_room_roomba
+      topic: valetudo/living_room_roomba/ZoneCleaningCapability/start/set
+      payload: 87ef1e91-d285-4059-ad05-13ba4435e3bc
   mode: single
   alias: Clean the kitchen
 apple_tv_wake:
   alias: Apple TV wake
   sequence:
   - service: remote.send_command
-    target:
-      entity_id: remote.living_room_apple_tv
     data:
       command: menu
+    target:
+      entity_id: remote.living_room_apple_tv
   mode: single
 turn_off_projector:
   alias: Turn off projector
@@ -146,4 +76,95 @@ apple_tv_sleep:
       - home_hold
       - select
       delay_secs: 1
+  mode: single
+stop_cleaning:
+  alias: Stop cleaning
+  sequence:
+  - device_id: d8d3bc2e142783a91b5aaa830508a270
+    domain: vacuum
+    entity_id: vacuum.living_room_roomba
+    type: dock
+  - device_id: b30410514751d96a308eba1a5245f42d
+    domain: vacuum
+    entity_id: vacuum.office_roomba
+    type: dock
+  mode: single
+sent_the_living_room_vacuum_to_the_bin:
+  alias: Sent the living room vacuum to the bin
+  sequence:
+  - service: mqtt.publish
+    data:
+      topic: valetudo/living_room_roomba/GoToLocationCapability/go/set
+      payload: 201d8748-d639-4f67-80b1-0ae6d09a5eb4
+  mode: single
+sent_the_office_vacuum_to_the_bin:
+  alias: Sent the office vacuum to the bin
+  sequence:
+  - service: mqtt.publish
+    data:
+      topic: valetudo/office_roomba/GoToLocationCapability/go/set
+      payload: 8a400a5f-4b57-4157-9863-2ab7db1a481a
+  mode: single
+start_cleaning:
+  alias: Start cleaning
+  sequence:
+  - device_id: d8d3bc2e142783a91b5aaa830508a270
+    domain: vacuum
+    entity_id: vacuum.living_room_roomba
+    type: clean
+  mode: single
+office_privacy:
+  alias: Office Privacy
+  sequence:
+  - service: cover.set_cover_position
+    data:
+      position: 35
+    target:
+      area_id: office
+  mode: single
+stop_the_shades:
+  alias: Stop the shades
+  sequence:
+  - service: cover.stop_cover
+    target:
+      area_id:
+      - bedroom
+      - living_room
+      - office
+  mode: single
+apple_tv_start_tagesschau:
+  alias: Apple TV Start Tagesschau
+  sequence:
+  - service: remote.send_command
+    target:
+      entity_id: remote.living_room_apple_tv
+    data:
+      command:
+      - menu
+      - top_menu
+      - down
+      - right
+      - right
+      - right
+      - select
+      delay_secs: 0.5
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 7
+      milliseconds: 0
+  - service: remote.send_command
+    target:
+      entity_id: remote.living_room_apple_tv
+    data:
+      command:
+      - down
+      - down
+      - right
+      - right
+      - select
+      - up
+      - up
+      - select
+      delay_secs: 0.5
   mode: single

@@ -1,0 +1,80 @@
+# light01athom15w
+
+# Variables
+substitutions:
+  device_name:    !secret node_4_device_name
+  friendly_name:  !secret node_4_friendly_name
+  hardware_id:    !secret node_4_hardware_id
+  static_ip:      !secret node_4_static_ip
+  ssid:           !secret not_ssid
+  ssid_pw:        !secret not_password
+  ap_pw:          !secret ap_password 
+  gateway:        !secret not_gateway
+  subnet:         !secret not_subnet
+  ntp:            !secret ntp
+
+  var_max_power: "1"
+  var_zero_means_zero: "true"
+
+
+wifi:
+  <<: !include includes/network_manual_ip.yaml
+  
+packages:
+  wifi:   !include includes/network.yaml
+
+#Device Specific Config
+esphome:
+  name: "${device_name}"
+  build_path: "./.build/${device_name}/"
+  platform: ESP8266
+  board: esp01_1m
+
+  
+output:
+  - platform: esp8266_pwm
+    pin: GPIO13
+    id: out_ct
+    inverted: true
+    min_power: 0.5
+  - platform: esp8266_pwm
+    pin: GPIO5
+    id: out_b
+    min_power: 0.25
+    max_power: $var_max_power
+    zero_means_zero: $var_zero_means_zero
+  - platform: esp8266_pwm
+    pin: GPIO4
+    id: out_red
+    min_power: 0.02381226
+    max_power: $var_max_power
+    zero_means_zero: $var_zero_means_zero
+  - platform: esp8266_pwm
+    pin: GPIO12
+    id: out_green
+    min_power: 0.00645025
+    max_power: $var_max_power
+    zero_means_zero: $var_zero_means_zero
+  - platform: esp8266_pwm
+    pin: GPIO14
+    id: out_blue
+    min_power: 0.003
+    max_power: $var_max_power
+    zero_means_zero: $var_zero_means_zero
+
+
+    
+# Example configuration entry
+light:
+  - platform: rgbct
+    name: $friendly_name
+    red: out_red
+    green: out_green
+    blue: out_blue
+    color_temperature: out_ct
+    white_brightness: out_b
+    cold_white_color_temperature: 153 mireds
+    warm_white_color_temperature: 500 mireds
+    gamma_correct: 1.3
+    default_transition_length: 0s
+    color_interlock: true

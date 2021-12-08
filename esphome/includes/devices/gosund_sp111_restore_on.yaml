@@ -3,11 +3,13 @@
 # I grouped them in the gsheet below.
 # https://docs.google.com/spreadsheets/d/1SL-N8V5TfUvrYqx9DcNiYm6hDFtqOX6M2BlFxSOUfBo/edit?usp=sharing
 
-packages:
-  <<: !include_dir_named ../common
+
+substitutions:
+  time_timezone: "Europe/Berlin"
 
 esphome:
-  <<: !include .esphome.yaml
+  name: "${device_name}"
+  build_path: "./.build/${device_name}/"
   platform: ESP8266
   board: esp8285
 
@@ -46,7 +48,7 @@ binary_sensor:
     pin: GPIO13
     id: button
     internal: true
-    on_state:
+    on_press:
       then:
         - switch.toggle: relay
 
@@ -75,6 +77,9 @@ sensor:
             - 3882.165 -> 512.0
             - 7605.047 -> 1003
             - 12075 -> 1580
+        - sliding_window_moving_average:
+           window_size: 15
+           send_every: 15
     current:
       device_class: "current"
       state_class: "measurement"
@@ -95,5 +100,39 @@ sensor:
             - 756.512 -> 238.0
       internal: true
 
-  - <<: !include ../sensors/total_daily_energy.yaml
+  - platform: template
+    id: sensor_uptime_timestamp
+    name: "${friendly_name} Uptime"
+    device_class: "timestamp"
+    accuracy_decimals: 0
+    update_interval: never
+    lambda: |-
+      static float timestamp = (
+        id(time_homeassistant).utcnow().timestamp - id(sensor_uptime).state
+      );
+      return timestamp;
+  - platform: uptime
+    id: sensor_uptime
+
+  - platform: total_daily_energy
+    id: sensor_total_daily_energy
+    power_id: device_power
+    name: "${friendly_name} Daily Energy Usage"
+    unit_of_measurement: "kWh"
+    filters:
+      # Multiplication factor from W to kW is 0.001
+      - multiply: 0.001
+
+time:
+  - platform: homeassistant
+    id: time_homeassistant
+    timezone: "${time_timezone}"
+    on_time_sync:
+      - component.update: sensor_uptime_timestamp
+
+  - platform: sntp
+    id: time_sntp
+    servers: 
+      - $ntp
+    timezone: "${time_timezone}"
 

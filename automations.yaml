@@ -17,36 +17,6 @@
     data:
       message: The mail is here! :)
   mode: single
-- id: '1615494969540'
-  alias: Office Wall Switch Single Click
-  description: ''
-  trigger:
-  - type: turned_on
-    platform: device
-    device_id: 7a1ecd0b2ffa25b732efd86b6da0d511
-    entity_id: binary_sensor.office_wall_switch_1
-    domain: binary_sensor
-  - type: turned_off
-    platform: device
-    device_id: 7a1ecd0b2ffa25b732efd86b6da0d511
-    entity_id: binary_sensor.office_wall_switch_1
-    domain: binary_sensor
-  condition: []
-  action:
-  - choose:
-    - conditions:
-      - condition: state
-        state: 'on'
-        entity_id: light.lg_internal_office_all
-      sequence:
-      - service: light.turn_off
-        target:
-          entity_id: light.lg_internal_office_all
-    default:
-    - service: light.turn_on
-      target:
-        entity_id: light.lg_office_ambient
-  mode: restart
 - id: '1615514964078'
   alias: Hall Motion Activated Light
   description: ''
@@ -127,10 +97,6 @@
   - platform: time
     at: 07:00:00
   condition:
-  - condition: numeric_state
-    below: '40'
-    entity_id: cover.front_shades_internal
-    attribute: current_position
   - condition: state
     entity_id: binary_sensor.someone_home
     state: 'on'
@@ -257,14 +223,6 @@
   - service: input_boolean.turn_on
     target:
       entity_id: input_boolean.cleaned_today
-  - device_id: 0821e42b3324dc9b5d038af83de55e33
-    domain: vacuum
-    entity_id: vacuum.living_room_roomba
-    type: clean
-  - device_id: 7a6ed889016f996186edb44817587c63
-    domain: vacuum
-    entity_id: vacuum.office_roomba
-    type: clean
   - service: notify.awsome_people
     data:
       message: 'Living Room & Office Roomba started cleaning! '
@@ -281,22 +239,6 @@
     target:
       entity_id: input_boolean.cleaned_today
   mode: single
-- id: '1617849792005'
-  alias: Kitchen Cooking Off When Spot off
-  description: ''
-  trigger:
-  - platform: device
-    type: turned_off
-    device_id: c8bfb20bb8775a326709ff73c5a26558
-    entity_id: light.kitchen_spot
-    domain: light
-  condition: []
-  action:
-  - type: turn_off
-    device_id: 6b54ae295d297f9368f15ed1e9199658
-    entity_id: light.kitchen_cooking
-    domain: light
-  mode: single
 - id: '1618166810490'
   alias: Appliance has finished Washing Machine
   description: ''
@@ -308,6 +250,9 @@
       - service: notify.awsome_people
         data:
           message: 'The Washing Machine has finished! '
+      - service: counter.increment
+        target:
+          entity_id: counter.washings_since_refil
 - id: '1618167235681'
   alias: Appliance has finished Dryer
   description: ''
@@ -319,39 +264,6 @@
       - service: notify.awsome_people
         data:
           message: The dryer has finished!
-- id: '1621664668004'
-  alias: Kitchen Cooking Fan Slide Remote
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: binary_sensor.kitchen_cooking_magnet_sensor
-  condition: []
-  action:
-  - choose:
-    - conditions:
-      - type: is_open
-        condition: device
-        device_id: 1bb0c9c759bbbb1b8fc73718a112a890
-        entity_id: binary_sensor.kitchen_cooking_magnet_sensor
-        domain: binary_sensor
-      sequence:
-      - type: turn_on
-        device_id: 6b54ae295d297f9368f15ed1e9199658
-        entity_id: light.kitchen_cooking
-        domain: light
-    - conditions:
-      - type: is_not_open
-        condition: device
-        device_id: 1bb0c9c759bbbb1b8fc73718a112a890
-        entity_id: binary_sensor.kitchen_cooking_magnet_sensor
-        domain: binary_sensor
-      sequence:
-      - type: turn_off
-        device_id: 6b54ae295d297f9368f15ed1e9199658
-        entity_id: light.kitchen_cooking
-        domain: light
-    default: []
-  mode: single
 - id: '1621762109830'
   alias: Kitchen Spot Motion Activated Light
   description: ''
@@ -365,17 +277,6 @@
       turn_off_blocker_entity: binary_sensor.kitchen_someone_is_cooking
       time_limit_after: input_datetime.kitchen_spot_automation_run_after
       time_limit_before: input_datetime.kitchen_light_automation
-- id: '1621763361739'
-  alias: Kitchen Cooking Motion Activated Light
-  description: ''
-  use_blueprint:
-    path: freakshock88/motion_illuminance_activated_entity.yaml
-    input:
-      motion_sensor: binary_sensor.kitche_lumi_motion_sensor_ias_zone
-      target_entity: light.kitchen_cooking
-      blocker_entity: binary_sensor.the_projector_is_on_off
-      no_motion_wait: input_number.kitchen_motion_timeout
-      target_off_entity: binary_sensor.kitchen_someone_is_cooking
 - id: '1621877307059'
   alias: Bathroom Motion Auto on after 2h if off
   description: ''
@@ -492,21 +393,6 @@
         domain: switch
     default: []
   mode: single
-- id: '1626770047922'
-  alias: New Automation
-  description: ''
-  trigger:
-  - platform: event
-    event_type: state_changed
-    event_data:
-      entity_id: input_boolean.tester_input
-      new_state: 'on'
-  condition: []
-  action:
-  - service: input_boolean.toggle
-    target:
-      entity_id: input_boolean.tester_output
-  mode: single
 - id: '1628920325018'
   alias: Office Desk PC - Peripherals Automation
   description: ''
@@ -552,103 +438,6 @@
       - service: notify.awsome_people
         data:
           message: 'The Dishwasher Machine has finished! '
-- id: '1630340723416'
-  alias: Office Wall Switch Double Click
-  description: ''
-  trigger:
-  - type: turned_on
-    platform: device
-    device_id: 7a1ecd0b2ffa25b732efd86b6da0d511
-    entity_id: binary_sensor.office_wall_switch_2
-    domain: binary_sensor
-  - type: turned_off
-    platform: device
-    device_id: 7a1ecd0b2ffa25b732efd86b6da0d511
-    entity_id: binary_sensor.office_wall_switch_2
-    domain: binary_sensor
-  condition: []
-  action:
-  - choose:
-    - conditions:
-      - condition: state
-        state: 'on'
-        entity_id: light.office_ceiling
-      sequence:
-      - service: light.turn_off
-        target:
-          entity_id: light.lg_internal_office_all
-    default:
-    - service: light.turn_on
-      target:
-        entity_id: light.office_ceiling
-  mode: restart
-- id: '1630341072974'
-  alias: Office Wall Switch Long Click
-  description: ''
-  trigger:
-  - type: turned_on
-    platform: device
-    device_id: 7a1ecd0b2ffa25b732efd86b6da0d511
-    entity_id: binary_sensor.office_wall_switch_3
-    domain: binary_sensor
-  - type: turned_off
-    platform: device
-    device_id: 7a1ecd0b2ffa25b732efd86b6da0d511
-    entity_id: binary_sensor.office_wall_switch_3
-    domain: binary_sensor
-  condition: []
-  action:
-  - choose:
-    - conditions:
-      - condition: device
-        device_id: 58d26aa7243d28eb010dbd21f414b5b6
-        domain: cover
-        entity_id: cover.office_shade
-        type: is_position
-        below: 30
-      sequence:
-      - device_id: 58d26aa7243d28eb010dbd21f414b5b6
-        domain: cover
-        entity_id: cover.office_shade
-        type: set_position
-        position: 100
-    default:
-    - device_id: 58d26aa7243d28eb010dbd21f414b5b6
-      domain: cover
-      entity_id: cover.office_shade
-      type: set_position
-      position: 19
-  mode: restart
-- id: '1633116670134'
-  alias: Bedroom Wall Switch Single
-  description: ''
-  trigger:
-  - type: turned_on
-    platform: device
-    device_id: f266b963ca7a66d3c4ae44aa0d50c29b
-    entity_id: binary_sensor.bedroom_wall_switch_1
-    domain: binary_sensor
-  - type: turned_off
-    platform: device
-    device_id: f266b963ca7a66d3c4ae44aa0d50c29b
-    entity_id: binary_sensor.bedroom_wall_switch_1
-    domain: binary_sensor
-  condition: []
-  action:
-  - choose:
-    - conditions:
-      - condition: state
-        state: 'on'
-        entity_id: light.lg_internal_bedroom_all
-      sequence:
-      - service: light.turn_off
-        target:
-          entity_id: light.lg_internal_bedroom_all
-    default:
-    - service: light.turn_on
-      target:
-        entity_id: light.bedroom_ambient
-  mode: restart
 - id: '1633179076954'
   alias: Main Door Open
   description: ''
@@ -667,111 +456,273 @@
     data:
       message: Main Door Open
   mode: single
-- id: '1634382110924'
-  alias: Office Cover
+- id: '1634926705751'
+  alias: Sent office vacuum to bin.
   description: ''
   trigger:
-  - device_id: 5f8bcda84a5553705c9f7e0cc619848c
-    domain: zha
-    platform: device
-    type: remote_button_short_press
-    subtype: turn_on
+  - platform: state
+    entity_id: vacuum.office_roomba
+    from: cleaning
+    to: returning
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 3
+      milliseconds: 0
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.office_roomba_bin
+    above: '100'
+  action:
+  - service: mqtt.publish
+    data:
+      topic: valetudo/office_roomba/BasicControlCapability/operation/set
+      payload: PAUSE
+  - wait_template: '{ is_state(''''vacuum.office_roomba'''', ''''idle'''') }'
+    timeout: 00:00:05
+    continue_on_timeout: true
+  - service: mqtt.publish
+    data:
+      topic: valetudo/office_roomba/GoToLocationCapability/go/set
+      payload: 8a400a5f-4b57-4157-9863-2ab7db1a481a
+  - service: notify.awsome_people
+    data:
+      message: Please empty the office vacuum
+      title: Office vacuum going to the bin
+  mode: single
+- id: '1634926897228'
+  alias: Sent office vacuum back to dock when bin is empty
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.office_roomba_bin
+    below: '1'
+  condition: []
+  action:
+  - device_id: b30410514751d96a308eba1a5245f42d
+    domain: vacuum
+    entity_id: vacuum.office_roomba
+    type: dock
+  mode: single
+- id: '1634927740774'
+  alias: Sent living room vacuum back to dock when bin is empty
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.living_room_roomba_bin
+    below: '1'
+  condition: []
+  action:
+  - device_id: d8d3bc2e142783a91b5aaa830508a270
+    domain: vacuum
+    entity_id: vacuum.living_room_roomba
+    type: dock
+  mode: single
+- id: '1634927842694'
+  alias: Sent living room vacuum to bin.
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: vacuum.living_room_roomba
+    from: cleaning
+    to: returning
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 3
+      milliseconds: 0
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.living_room_roomba_bin
+    above: '100'
+  action:
+  - service: mqtt.publish
+    data:
+      topic: valetudo/living_room_roomba/BasicControlCapability/operation/set
+      payload: PAUSE
+  - wait_template: '{ is_state(''''vacuum.living_room_roomba'''', ''''idle'''') }'
+    timeout: 00:00:05
+    continue_on_timeout: true
+  - service: mqtt.publish
+    data:
+      topic: valetudo/living_room_roomba/GoToLocationCapability/go/set
+      payload: 201d8748-d639-4f67-80b1-0ae6d09a5eb4
+  - service: notify.awsome_people
+    data:
+      message: Please empty the living room vacuum
+      title: Living Room vacuum going to the bin
+  mode: single
+- id: '1635980495683'
+  alias: Motion Generic Reset
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.rear_terrace_motion_sensor_ias_zone
+  - platform: state
+    entity_id: binary_sensor.front_terrace_motion_sensor_ias_zone
+  condition:
+  - condition: template
+    value_template: '{{ trigger.to_state.state == "on" }}'
+  action:
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - service: zha.set_zigbee_cluster_attribute
+    data:
+      ieee: '{{ device_attr(trigger.entity_id, "identifiers") | first | last }}'
+      endpoint_id: 1
+      cluster_id: 1280
+      attribute: 2
+      value: '0'
+  mode: parallel
+  max: 10
+- id: '1636030572868'
+  alias: Alarm System Time Based Activation
+  description: ''
+  trigger:
+  - platform: time
+    at: '12:00:00'
     id: 'on'
-  - device_id: 5f8bcda84a5553705c9f7e0cc619848c
-    domain: zha
-    platform: device
-    type: remote_button_short_press
-    subtype: turn_off
+  - platform: time
+    at: 07:00:00
     id: 'off'
   condition: []
   action:
   - choose:
     - conditions:
-      - condition: state
-        entity_id: input_boolean.cover_helper
-        state: 'on'
+      - condition: trigger
+        id: 'on'
       sequence:
-      - service: cover.stop_cover
+      - service: input_boolean.turn_on
         target:
-          entity_id: cover.office_shade_2
+          entity_id: input_boolean.alarm_system
+    - conditions:
+      - condition: trigger
+        id: 'off'
+      sequence:
       - service: input_boolean.turn_off
         target:
-          entity_id: input_boolean.cover_helper
-    - conditions:
-      - condition: state
-        entity_id: input_boolean.cover_helper
-        state: 'off'
-      sequence:
-      - choose:
-        - conditions:
-          - condition: trigger
-            id: 'on'
-          sequence:
-          - service: cover.open_cover
-            target:
-              entity_id: cover.office_shade_2
-          - service: input_boolean.turn_on
-            target:
-              entity_id: input_boolean.cover_helper
-        - conditions:
-          - condition: trigger
-            id: 'off'
-          sequence:
-          - service: cover.close_cover
-            target:
-              entity_id: cover.office_shade_2
-          - service: input_boolean.turn_on
-            target:
-              entity_id: input_boolean.cover_helper
-        default: []
+          entity_id: input_boolean.alarm_system
     default: []
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 30
-      milliseconds: 0
-  - service: input_boolean.turn_off
-    target:
-      entity_id: input_boolean.cover_helper
-  mode: restart
-- id: '1634401854050'
-  alias: Office Ceiling Light brightness entity switcher
+  mode: single
+- id: '1637403974367'
+  alias: Alarm System
   description: ''
   trigger:
-  - platform: numeric_state
-    entity_id: light.office_ceiling
-    id: night
-    below: '10'
-    attribute: brightness
-  - platform: numeric_state
-    entity_id: light.office_ceiling_nightlight
-    id: day
-    above: '245'
-    attribute: brightness
+  - type: occupied
+    platform: device
+    device_id: e80b8c8231581c1d8aa14207c0f0131c
+    entity_id: binary_sensor.front_terrace_motion_sensor_ias_occupancy
+    domain: binary_sensor
+  - type: occupied
+    platform: device
+    device_id: abb07130a0580c8ca077c5fa947f4a2c
+    entity_id: binary_sensor.rear_terrace_motion_sensor_aquara_occupancy
+    domain: binary_sensor
+  condition: []
+  action:
+  - service: notify.awsome_people
+    data:
+      message: '{{ trigger.entity_id }} has been triggered'
+  - service: cover.open_cover
+    target:
+      area_id: living_room
+  mode: single
+- id: '1637913342926'
+  alias: Office flash selected light & smart switch between day and night ceiling
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_select.office_lights
+    id: input_select
   condition: []
   action:
   - choose:
     - conditions:
-      - condition: numeric_state
-        entity_id: light.office_ceiling
-        attribute: brightness
-        below: '10'
+      - condition: template
+        value_template: '{{ is_state(states(''input_select.office_lights''), ''on'')
+          }}'
       sequence:
-      - service: input_select.select_option
+      - service: light.turn_off
         target:
-          entity_id: input_select.office_lights
-        data:
-          option: light.office_ceiling_nightlight
+          entity_id: '{{ states(''input_select.office_lights'') }}'
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 0
+          milliseconds: 500
+      - service: light.turn_on
+        target:
+          entity_id: '{{ states(''input_select.office_lights'') }}'
     - conditions:
-      - condition: numeric_state
-        entity_id: light.office_ceiling_nightlight
-        above: '99'
-        attribute: brightness
+      - condition: template
+        value_template: '{{ is_state(states(''input_select.office_lights''), ''off'')
+          }}'
       sequence:
-      - service: input_select.select_option
+      - service: light.turn_on
         target:
-          entity_id: input_select.office_lights
-        data:
-          option: light.office_ceiling
+          entity_id: '{{ states(''input_select.office_lights'') }}'
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 0
+          milliseconds: 500
+      - service: light.turn_off
+        target:
+          entity_id: '{{ states(''input_select.office_lights'') }}'
     default: []
+  mode: single
+- id: '1638310600140'
+  alias: Bedroom Max Bedside Remote
+  description: ''
+  trigger:
+  - device_id: 3bf2a3eb4f28d75accb911662043c2c7
+    domain: zha
+    platform: device
+    type: remote_button_long_press
+    subtype: turn_on
+    id: button
+  condition: []
+  action:
+  - service: input_boolean.toggle
+    target:
+      entity_id: input_boolean.bedroom_shade_max_bedside_remote
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.bedroom_shade_max_bedside_remote
+        state: 'on'
+      sequence:
+      - service: cover.close_cover
+        target:
+          area_id: bedroom
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.bedroom_shade_max_bedside_remote
+        state: 'off'
+      sequence:
+      - service: cover.set_cover_position
+        data:
+          position: 40
+        target:
+          area_id: bedroom
+    default: []
+  mode: single
+- id: '1638781729505'
+  alias: Office Vacuum Automation Loop
+  description: ''
+  trigger:
+  - platform: time
+    at: 03:00:00
+  condition:
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
+  action:
+  - device_id: b30410514751d96a308eba1a5245f42d
+    domain: vacuum
+    entity_id: vacuum.office_roomba
+    type: clean
   mode: single

@@ -1,0 +1,109 @@
+# Office Heating
+
+# Variables
+substitutions:
+  device_name:    !secret node_23_device_name
+  friendly_name:  !secret node_23_friendly_name
+  hardware_id:    !secret node_23_hardware_id
+  static_ip:      !secret node_23_static_ip
+  ssid:           !secret not_ssid
+  ssid_pw:        !secret not_password
+  ap_pw:          !secret ap_password 
+  gateway:        !secret not_gateway
+  subnet:         !secret not_subnet
+  ntp:            !secret ntp
+
+esphome:
+  name: "${device_name}"
+  platform: ESP8266
+  board: esp01_1m
+  build_path: "./.build/${device_name}/"
+
+wifi:
+  <<: !include includes/network_manual_ip.yaml
+
+packages:
+  wifi:   !include includes/network.yaml
+
+logger:
+  level: debug
+
+  # Device Specific Config
+
+output:
+  - platform: gpio
+    pin: GPIO4
+    id: relay1
+
+  - platform: slow_pwm
+    pin: GPIO4
+    id: slow_pwm_output
+    period: 15min
+
+switch:
+  - platform: output
+    name: "${friendly_name} Relay"
+    output: relay1
+    id: switch1
+  
+  - platform: template
+    name: "Office PID Climate Autotune"
+    turn_on_action:
+      - climate.pid.autotune: 
+          id: pid_climate
+          noiseband: 0.2
+
+sensor:
+  - platform: homeassistant
+    id: office_temperature
+    name: Office Temperature
+    entity_id: sensor.office_temperature_pvvx
+  - platform: homeassistant
+    id: office_humidity
+    name: Office Humidity
+    entity_id: sensor.office_humidity_pvvx
+  - platform: homeassistant
+    id: office_sensor_battery
+    entity_id: sensor.office_battery_level_pvvx
+  
+  
+  - platform: pid
+    name: "PID Climate RESULT"
+    type: RESULT
+  - platform: pid
+    name: "PID Climate ERROR"
+    type: ERROR
+  - platform: pid
+    name: "PID Climate Proportional"
+    type: PROPORTIONAL 
+  - platform: pid
+    name: "PID Climate INTEGRAL"
+    type: INTEGRAL 
+  - platform: pid
+    name: "PID Climate DERIVATIVE"
+    type: DERIVATIVE 
+  - platform: pid
+    name: "PID Climate HEAT"
+    type: HEAT 
+  - platform: pid
+    name: "PID Climate KP"
+    type: KP
+  - platform: pid
+    name: "PID Climate KI"
+    type: KI
+  - platform: pid
+    name: "PID Climate KD"
+    type: KD
+    
+climate:
+  - platform: pid
+    id: pid_climate
+    name: "Office PID Climate Controller"
+    sensor: office_temperature
+    default_target_temperature: 22°C
+    heat_output: slow_pwm_output
+    control_parameters:
+      kp: 75 # (changed 17:51 03.12.21) #5 #0.57439
+      ki: 0.01 #0.00001
+      kd: 500 #5740.14893    
+

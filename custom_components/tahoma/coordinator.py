@@ -19,7 +19,7 @@ from pyhoma.exceptions import (
 )
 from pyhoma.models import DataType, Device, Place, State
 
-from .const import DOMAIN
+from .const import DOMAIN, UPDATE_INTERVAL
 
 TYPES = {
     DataType.NONE: None,
@@ -59,11 +59,15 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
         )
 
         self.data = {}
-        self.original_update_interval = update_interval
         self.client = client
-        self.devices: Dict[str, Device] = {d.deviceurl: d for d in devices}
+        self.devices: Dict[str, Device] = {d.device_url: d for d in devices}
+        self.is_stateless = all(
+            device.device_url.startswith("rts://")
+            or device.device_url.startswith("internal://")
+            for device in devices
+        )
         self.executions: Dict[str, Dict[str, str]] = {}
-        self.areas = self.places_to_area(places) if places else None
+        self.areas = self.places_to_area(places)
         self._config_entry_id = config_entry_id
 
     async def _async_update_data(self) -> Dict[str, Device]:
@@ -96,23 +100,16 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
             raise UpdateFailed(exception) from exception
 
         for event in events:
-            _LOGGER.debug(
-                "%s/%s (device: %s, state: %s -> %s)",
-                event.name,
-                event.exec_id,
-                event.deviceurl,
-                event.old_state,
-                event.new_state,
-            )
+            _LOGGER.debug(event)
 
             if event.name == EventName.DEVICE_AVAILABLE:
-                self.devices[event.deviceurl].available = True
+                self.devices[event.device_url].available = True
 
             elif event.name in [
                 EventName.DEVICE_UNAVAILABLE,
                 EventName.DEVICE_DISABLED,
             ]:
-                self.devices[event.deviceurl].available = False
+                self.devices[event.device_url].available = False
 
             elif event.name in [
                 EventName.DEVICE_CREATED,
@@ -124,17 +121,17 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
                 return None
 
             elif event.name == EventName.DEVICE_REMOVED:
-                base_device_url, *_ = event.deviceurl.split("#")
+                base_device_url, *_ = event.device_url.split("#")
                 registry = await device_registry.async_get_registry(self.hass)
 
                 if device := registry.async_get_device({(DOMAIN, base_device_url)}):
                     registry.async_remove_device(device.id)
 
-                del self.devices[event.deviceurl]
+                del self.devices[event.device_url]
 
             elif event.name == EventName.DEVICE_STATE_CHANGED:
                 for state in event.device_states:
-                    device = self.devices[event.deviceurl]
+                    device = self.devices[event.device_url]
                     if state.name not in device.states:
                         device.states[state.name] = state
                     device.states[state.name].value = self._get_state(state)
@@ -143,7 +140,8 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
                 if event.exec_id not in self.executions:
                     self.executions[event.exec_id] = {}
 
-                self.update_interval = timedelta(seconds=1)
+                if not self.is_stateless:
+                    self.update_interval = timedelta(seconds=1)
 
             elif (
                 event.name == EventName.EXECUTION_STATE_CHANGED
@@ -152,15 +150,26 @@ class OverkizDataUpdateCoordinator(DataUpdateCoordinator):
             ):
                 del self.executions[event.exec_id]
 
+            # Log errors via `overkiz_event`
+            if event.failure_type_code:
+                self.hass.bus.fire(
+                    "overkiz.event",
+                    {
+                        "event_name": event.name.value,
+                        "failure_type_code": event.failure_type_code.value,
+                        "failure_type": event.failure_type,
+                    },
+                )
+
         if not self.executions:
-            self.update_interval = self.original_update_interval
+            self.update_interval = UPDATE_INTERVAL
 
         return self.devices
 
     async def _get_devices(self) -> Dict[str, Device]:
         """Fetch devices."""
         _LOGGER.debug("Fetching all devices and state via /setup/devices")
-        return {d.deviceurl: d for d in await self.client.get_devices(refresh=True)}
+        return {d.device_url: d for d in await self.client.get_devices(refresh=True)}
 
     @staticmethod
     def _get_state(

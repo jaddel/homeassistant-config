@@ -5,18 +5,21 @@
     include_entities:
       # Light
       - light.office_ceiling_nightlight
+      - light.office_ceiling
       - light.lifx_office_wardrobe
       - light.lifx_office_sofa
       - light.lifx_office_screen
+      - light.lg_office_ambient
       # Covers
-      - cover.office_shade_2
-      # Vacuum
+      - cover.office_shade
+      # Vacuum 
       - vacuum.office_roomba
       # Scripts
       - script.office_desk_main_fail_safe
       # Switche
-      - switch.hybernate
-      - light.office_ceiling
+      - switch.standby
+      - switch.office_desk_peripherals
+      - switch.office_desk_multi_socket_4
 
   entity_config:
     # Light
@@ -38,8 +41,10 @@
     script.office_desk_main_fail_safe:
       name: Office Computer
     # Switches
-    switch.hybernate:
+    switch.office_standby:
       name: Office Standby my Computer
+    switch.office_desk_multi_socket_4:
+      name: Office Soldering
 
 ### Bedroom
 - name: bedroom_hkb
@@ -48,14 +53,12 @@
     include_entities:
       # Light
       - light.bedroom_ceiling_nightlight
-      - light.lifx_bedroom_bed
+      - light.bedroom_freya_bedside
       - light.bedroom_max_bedside
       - light.lifx_bedroom_display
-      - light.bedroom_ambient
+      - light.lg_bedroom_ambient
       # Covers
-      - cover.bedroom_shade_2
-      
-      - script.bedroom_privacy
+      - cover.bedroom_shade
       - light.bedroom_ceiling
       
 
@@ -71,7 +74,7 @@
       name: Max Bedside
     light.lifx_bedroom_display:
       name: Bedroom Monitor
-    light.bedroom_ambient:
+    light.lg_bedroom_ambient:
       name: Bedroom Ambient
     # Covers
     cover.bedroom_shade:
@@ -97,7 +100,7 @@
       # Vacuum
       - vacuum.living_room_roomba
       # Script
-      - script.living_room_privacy
+      #- script.living_room_privacy
 
   entity_config:
     # Light∏
@@ -195,7 +198,19 @@
       # Scripts
       - script.home_assistent_restart_appdameon
       - script.home_assistent_restart_core
+      - script.clean_the_kitchen
+      - script.stop_cleaning
+      - script.start_cleaning
+      - script.sent_the_living_room_vacuum_to_the_bin
+      - script.sent_the_office_vacuum_to_the_bin
+      - script.living_room_privacy
+      - script.bedroom_privacy
+      - script.office_privacy
+      - script.stop_the_shades
+      # Input Booleans
       - input_boolean.sleep_mode
+      - input_boolean.alarm_system
+      # Switches
       - switch.projector_wemaxa300
   entity_config:
     # Scripts
@@ -203,8 +218,30 @@
       name: Restart HA Appdaemon
     script.home_assistent_restart_core:
       name: Restart HA Core
+    script.clean_the_kitchen:
+      name: Clean the kitchen script
+    script.stop_cleaning:
+      name: Stop cleaning script
+    script.start_cleaning:
+      name: Start cleaning script
+    script.sent_the_living_room_vacuum_to_the_bin:
+      name: Sent the living room vacuum to the bin 
+    script.sent_the_office_vacuum_to_the_bin:
+      name: Sent the office vacuum to the bin
+    script.living_room_privacy:
+      name: Living room privacy script
+    script.bedroom_privacy:
+      name: Bedroom privacy script
+    script.office_privacy:
+      name: Office privacy script
+    script.stop_the_shades:
+      name: Stop the shades
+    # Input Booleans
     input_boolean.sleep_mode:
       name: Sleep Mode
+    # Switches
     switch.projector_wemaxa300:
       name: Projector
+
+
 

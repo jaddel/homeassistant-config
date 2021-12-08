@@ -1,0 +1,26 @@
+# Bathroom Heating
+
+# Variables
+substitutions:
+  device_name:    !secret node_21_device_name
+  friendly_name:  !secret node_21_friendly_name
+  hardware_id:    !secret node_21_hardware_id
+  static_ip:      !secret node_21_static_ip
+  ssid:           !secret not_ssid
+  ssid_pw:        !secret not_password
+  ap_pw:          !secret ap_password 
+  gateway:        !secret not_gateway
+  subnet:         !secret not_subnet
+  ntp:            !secret ntp
+
+wifi:
+  <<: !include includes/network_manual_ip.yaml
+  #use_address: 10.25.30.188
+packages:
+  wifi:   !include includes/network.yaml
+
+esphome:
+    name: "${device_name}"
+    platform: ESP8266
+    board: d1_mini_lite
+    build_path: "./.build/${device_name}/"

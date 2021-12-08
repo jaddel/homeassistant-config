@@ -7,12 +7,13 @@
 #
 # https://esphome.io/components/sensor/total_daily_energy.html
 #
-platform: total_daily_energy
-id: sensor_total_daily_energy
-power_id: device_power
-name: "${friendly_name} Daily Energy Usage"
-unit_of_measurement: "kWh"
-filters:
-  # Multiplication factor from W to kW is 0.001
-  - multiply: 0.001
+sensor:
+  platform: total_daily_energy
+  id: sensor_total_daily_energy
+  power_id: device_power
+  name: "${friendly_name} Daily Energy Usage"
+  unit_of_measurement: "kWh"
+  filters:
+    # Multiplication factor from W to kW is 0.001
+    - multiply: 0.001
 

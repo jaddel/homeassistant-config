@@ -19,9 +19,21 @@ binary_sensor:
     internal: true
     on_multi_click:
       - timing:
-          - ON for at most 1s
-          - OFF for at most 1s
-          - ON for at most 1s
+        - ON for at most 0.5s
+        - OFF for at least 0.5s
+        then:
+          - logger.log: "Single Short Clicked"
+          - lambda: |-
+              if (id(template_sensor_1).state) {
+              id(template_sensor_1).publish_state(false);
+              } else { 
+              id(template_sensor_1).publish_state(true);
+              }
+
+      - timing:
+          - ON for at most 0.6s
+          - OFF for at most 0.5s
+          - ON for at most 0.6s
           - OFF for at least 0.2s
         then:
           - logger.log: "Double Clicked"
@@ -31,10 +43,10 @@ binary_sensor:
               } else {
               id(template_sensor_2).publish_state(true); 
               }
-            
+
       - timing:
-          - ON for 1s to 5s
-          - OFF for at least 0.5s
+          - ON for at least 1s 
+          #- OFF for at least 0.5s
         then:
           - logger.log: "Single Long Clicked"
           - lambda: |-
@@ -43,19 +55,6 @@ binary_sensor:
               } else {
               id(template_sensor_3).publish_state(true); 
               }
-
-      - timing:
-          - ON for at most 1s
-          - OFF for at least 0.5s
-        then:
-          - logger.log: "Single Short Clicked"
-          - lambda: |-
-              if (id(template_sensor_1).state) {
-              id(template_sensor_1).publish_state(false);
-              } else { 
-              id(template_sensor_1).publish_state(true);
-              }
-            
 
   - platform: template
     name: "${friendly_name} 1"

@@ -1,8 +1,9 @@
-# If you change the light for a sitch or the other way around, 
+# If you change the light for a switch or the other way around, 
 # make shure to also change
 # the automation service call "light.turn_off" / "swich.turn_off".
 esphome:
-  <<: !include .esphome.yaml
+  name: "${device_name}"
+  build_path: "./.build/${device_name}/"
   platform: ESP8266
   board: esp01_1m
   
@@ -10,7 +11,7 @@ esphome:
 substitutions:
 
   max_power: "2000.0" # watt
-  max_temp: "80.0" # °C
+  max_temp: "90.0" # °C
 
 script:
   - id: protection_temp
@@ -137,7 +138,7 @@ binary_sensor:
     on_state:
       then:
         - light.toggle: channel_1
-    internal: true
+    internal: false
 
   - platform: gpio
     pin:
@@ -146,7 +147,7 @@ binary_sensor:
     on_state:
       then:
         - fan.toggle: channel_2
-    internal: true
+    internal: false
 
     #Needs to stay added to prevent the shelly from overheating.
   - platform: gpio

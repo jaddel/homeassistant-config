@@ -57,27 +57,36 @@
     entities:
       - light.lifx_living_room_table
       - light.lifx_living_room_sofa
+      - light.living_room_ball
 
+# Kitchen
+
+  - platform: group
+    name: LG Kitchen Counter
+    entities:
+      - light.kitchen_cooking
+      - light.kitchen_spot
+      
 # Bedroom
 
   - platform: group
-    name: Bedroom Ambient
+    name: LG Bedroom Ambient
     entities:
-      - light.lifx_bedroom_bed
+      - light.bedroom_freya_bedside
       - light.lifx_bedroom_wardrobe
 
   - platform: group
-    name: LG_internal Bedroom 
+    name: LG internal Bedroom 
     entities:
       - light.bedroom_max_bedside
       - light.bedroom_ceiling
       - light.bedroom_ceiling_nightlight
 
   - platform: group
-    name: LG_internal Bedroom All
+    name: LG internal Bedroom All
     entities:
       - light.bedroom_max_bedside
       - light.bedroom_ceiling
       - light.bedroom_ceiling_nightlight      
-      - light.lifx_bedroom_bed
+      - light.bedroom_freya_bedside
       - light.lifx_bedroom_wardrobe

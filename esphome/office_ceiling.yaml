@@ -1,0 +1,119 @@
+# office_yeelight_ceiling
+
+# Variables
+substitutions:
+  device_name:    !secret node_6_device_name
+  friendly_name:  !secret node_6_friendly_name
+  hardware_id:    !secret node_6_hardware_id
+  static_ip:      !secret node_6_static_ip
+  ssid:           !secret not_ssid
+  ssid_pw:        !secret not_password
+  ap_pw:          !secret ap_password 
+  gateway:        !secret not_gateway
+  subnet:         !secret not_subnet
+  ntp:            !secret ntp
+
+  var_min_power: "30%"
+  var_max_power: "100%"
+  var_zero_means_zero: "true"
+
+#Wifi
+wifi:
+  networks:
+  - ssid: !secret not_ssid
+    password: !secret not_password
+  # If wifi can not connect reboot with in xx hours  
+  reboot_timeout: 0s
+  fast_connect: true
+  <<: !include includes/network_manual_ip.yaml
+  
+  #Access Point
+  ap:
+    ssid: AP_${device_name}
+    password: $ap_pw
+
+#Web Server for manual access 
+web_server:
+
+#Log to ESPHome
+logger:
+  #Disable logging to serial
+  baud_rate: 0  
+
+#Homeassitant API
+api:
+  reboot_timeout: 0s
+
+#ESPHome OTA
+ota:
+
+#Device Specific Config
+esphome:
+  name: "${device_name}"
+  build_path: "./.build/${device_name}/"
+  project:
+    name: light.ceiling_yeelight_YLXD42YL
+    version: 1.0.0
+
+esp32:
+  board: esp32doit-devkit-v1
+  framework:
+    type: esp-idf
+    sdkconfig_options:
+      CONFIG_FREERTOS_UNICORE: y
+    advanced:
+      ignore_efuse_mac_crc: true
+
+sensor:
+  - platform: adc
+    pin: GPIO36
+    name: "${friendly_name} adc1"
+    attenuation: 11db
+    internal: true
+  - platform: adc
+    pin: GPIO32
+    name: "${friendly_name} adc2"
+    attenuation: 11db
+    internal: true
+
+output:
+  - platform: ledc
+    pin: GPIO19
+    id: output_warm
+    frequency: 19531Hz #4882
+    min_power: $var_min_power
+    max_power: $var_max_power
+    zero_means_zero: $var_zero_means_zero
+    
+  - platform: ledc
+    pin: GPIO21
+    id: output_cold
+    frequency: 19531Hz #4882
+    min_power: $var_min_power
+    max_power: $var_max_power
+    zero_means_zero: $var_zero_means_zero
+
+  - platform: ledc
+    pin: GPIO23
+    id: output_nightlight
+    frequency: 19531Hz #9765
+
+light:
+  - platform: monochromatic
+    name: "${friendly_name} Nightlight"
+    id: night_light
+    output: output_nightlight
+    gamma_correct: 0
+    on_turn_on:
+      - light.turn_off: ceiling_light
+  - platform: cwww
+    name: "${friendly_name}"
+    id: ceiling_light
+    cold_white: output_cold
+    warm_white: output_warm
+    cold_white_color_temperature: 6500 K
+    warm_white_color_temperature: 2700 K
+    gamma_correct: 0
+    constant_brightness: on
+    on_turn_on:
+      - light.turn_off: night_light
